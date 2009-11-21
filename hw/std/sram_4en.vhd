@@ -37,32 +37,10 @@ PORT
 );
 END sram_4en;
 
--- Special implementation using four separate RAMs
--- this implementation is harder to simulate since
--- it can not be easily loaded with data. However,
--- synthesizers may give better results.
---ARCHITECTURE arch2 OF sram_4en IS
---BEGIN
---    CON: FOR i IN 0 TO WIDTH/8 - 1 GENERATE
---        mem : sram GENERIC MAP
---        (
---            WIDTH   => 8,
---            SIZE    => SIZE
---        )
---        PORT MAP
---        (
---            dat_o   => dat_o((i+1)*8 - 1 DOWNTO i*8),
---            dat_i   => dat_i((i+1)*8 - 1 DOWNTO i*8),
---            adr_i   => adr_i,
---            wre_i   => wre_i(i),
---            ena_i   => ena_i,
---            clk_i   => clk_i
---        );
---    END GENERATE;
---END arch2;
-
--- Standard implementation
-ARCHITECTURE arch OF sram_4en IS
+-- Although this memory is very easy to use in conjunction with Modelsims mem load, it is not
+-- supported by many devices (although it comes straight from the library. Many devices give
+-- cryptic synthesization errors on this implementation, so it is not the default.
+ARCHITECTURE arch2 OF sram_4en IS
 
     TYPE ram_type IS array(2 ** SIZE - 1 DOWNTO 0) OF std_ulogic_vector(WIDTH - 1 DOWNTO 0);
     TYPE sel_type IS array(WIDTH/8 - 1 DOWNTO 0) OF std_ulogic_vector(7 DOWNTO 0);
@@ -90,4 +68,26 @@ BEGIN
             END IF;
         END IF;
     END PROCESS;
+END arch2;
+
+-- Less convenient but very general memory block with four separate write
+-- enable signals. (4x8 bit)
+ARCHITECTURE arch OF sram_4en IS
+BEGIN
+   mem: FOR i IN 0 TO WIDTH/8 - 1 GENERATE
+       mem : sram GENERIC MAP
+       (
+           WIDTH   => 8,
+           SIZE    => SIZE
+       )
+       PORT MAP
+       (
+           dat_o   => dat_o((i+1)*8 - 1 DOWNTO i*8),
+           dat_i   => dat_i((i+1)*8 - 1 DOWNTO i*8),
+           adr_i   => adr_i,
+           wre_i   => wre_i(i),
+           ena_i   => ena_i,
+           clk_i   => clk_i
+       );
+   END GENERATE;
 END arch;

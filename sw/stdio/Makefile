@@ -21,8 +21,12 @@ bin: cc
 
 mem: bin
 	../util/bin2mem < $(ELFFILE).bin > $(ELFFILE).mem
+	../util/bin2mem4 < $(ELFFILE).bin
+
+vhd: bin
+	../util/bin2rom $(ELFFILE).bin $(ELFFILE).vhd 12
 
 all: cc listing bin mem
 
 clean:
-	rm -f *~ *.bak $(ELFFILE).elf $(ELFFILE).dump $(ELFFILE).srec $(ELFFILE).vmem $(ELFFILE).mem $(ELFFILE).bin
+	rm -f *~ *.bak $(ELFFILE).elf *.mem $(ELFFILE).dump $(ELFFILE).srec $(ELFFILE).vmem $(ELFFILE).mem $(ELFFILE).vhd $(ELFFILE).bin

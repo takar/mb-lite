@@ -18,6 +18,7 @@ USE ieee.std_logic_unsigned.ALL;
 LIBRARY mblite;
 USE mblite.config_Pkg.ALL;
 USE mblite.core_Pkg.ALL;
+USE mblite.std_Pkg.ALL;
 
 USE std.textio.ALL;
 
