@@ -30,7 +30,7 @@ ARCHITECTURE arch OF testbench IS
     (
         dmem_i : OUT dmem_in_type;
         dmem_o : IN dmem_out_type;
-        clk_i  : IN std_ulogic
+        clk_i  : IN std_logic
     );
     END COMPONENT;
 
@@ -41,15 +41,15 @@ ARCHITECTURE arch OF testbench IS
     SIGNAL s_dmem_o : dmem_out_array_type(CFG_NUM_SLAVES - 1 DOWNTO 0);
     SIGNAL s_dmem_i : dmem_in_array_type(CFG_NUM_SLAVES - 1 DOWNTO 0);
 
-    SIGNAL sys_clk_i : std_ulogic := '0';
-    SIGNAL sys_int_i : std_ulogic;
-    SIGNAL sys_rst_i : std_ulogic;
+    SIGNAL sys_clk_i : std_logic := '0';
+    SIGNAL sys_int_i : std_logic;
+    SIGNAL sys_rst_i : std_logic;
 
     CONSTANT rom_size : integer := 16;
     CONSTANT ram_size : integer := 16;
 
-    SIGNAL sel_o : std_ulogic_vector(3 DOWNTO 0);
-    SIGNAL ena_o : std_ulogic;
+    SIGNAL sel_o : std_logic_vector(3 DOWNTO 0);
+    SIGNAL ena_o : std_logic;
 
 BEGIN
 

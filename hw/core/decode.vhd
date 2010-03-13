@@ -35,28 +35,28 @@ PORT
     decode_o : OUT decode_out_type;
     gprf_o   : OUT gprf_out_type;
     decode_i : IN decode_in_type;
-    ena_i    : IN std_ulogic;
-    rst_i    : IN std_ulogic;
-    clk_i    : IN std_ulogic
+    ena_i    : IN std_logic;
+    rst_i    : IN std_logic;
+    clk_i    : IN std_logic
 );
 END decode;
 
 ARCHITECTURE arch OF decode IS
 
     TYPE decode_reg_type IS RECORD
-        instruction     : std_ulogic_vector(CFG_IMEM_WIDTH - 1 DOWNTO 0);
-        program_counter : std_ulogic_vector(CFG_IMEM_SIZE - 1 DOWNTO 0);
-        immediate       : std_ulogic_vector(15 DOWNTO 0);
-        is_immediate    : std_ulogic;
-        msr_interrupt_enable : std_ulogic;
-        interrupt       : std_ulogic;
-        delay_interrupt : std_ulogic;
+        instruction     : std_logic_vector(CFG_IMEM_WIDTH - 1 DOWNTO 0);
+        program_counter : std_logic_vector(CFG_IMEM_SIZE - 1 DOWNTO 0);
+        immediate       : std_logic_vector(15 DOWNTO 0);
+        is_immediate    : std_logic;
+        msr_interrupt_enable : std_logic;
+        interrupt       : std_logic;
+        delay_interrupt : std_logic;
     END RECORD;
 
     SIGNAL r, rin : decode_out_type;
     SIGNAL reg, regin : decode_reg_type;
 
-    SIGNAL wb_dat_d : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+    SIGNAL wb_dat_d : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
 
 BEGIN
 
@@ -83,10 +83,10 @@ BEGIN
 
         VARIABLE v : decode_out_type;
         VARIABLE v_reg : decode_reg_type;
-        VARIABLE opcode : std_ulogic_vector(5 DOWNTO 0);
-        VARIABLE instruction : std_ulogic_vector(CFG_IMEM_WIDTH - 1 DOWNTO 0);
-        VARIABLE program_counter : std_ulogic_vector(CFG_IMEM_SIZE - 1 DOWNTO 0);
-        VARIABLE mem_result : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        VARIABLE opcode : std_logic_vector(5 DOWNTO 0);
+        VARIABLE instruction : std_logic_vector(CFG_IMEM_WIDTH - 1 DOWNTO 0);
+        VARIABLE program_counter : std_logic_vector(CFG_IMEM_SIZE - 1 DOWNTO 0);
+        VARIABLE mem_result : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
 
     BEGIN
         v := r;

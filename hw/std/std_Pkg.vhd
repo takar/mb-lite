@@ -28,12 +28,12 @@ PACKAGE std_Pkg IS
     );
     PORT
     (
-        dat_o : OUT std_ulogic_vector(WIDTH - 1 DOWNTO 0);
-        dat_i : IN std_ulogic_vector(WIDTH - 1 DOWNTO 0);
-        adr_i : IN std_ulogic_vector(SIZE - 1 DOWNTO 0);
-        wre_i : IN std_ulogic;
-        ena_i : IN std_ulogic;
-        clk_i : IN std_ulogic
+        dat_o : OUT std_logic_vector(WIDTH - 1 DOWNTO 0);
+        dat_i : IN std_logic_vector(WIDTH - 1 DOWNTO 0);
+        adr_i : IN std_logic_vector(SIZE - 1 DOWNTO 0);
+        wre_i : IN std_logic;
+        ena_i : IN std_logic;
+        clk_i : IN std_logic
     );
     END COMPONENT;
 
@@ -44,12 +44,12 @@ PACKAGE std_Pkg IS
     );
     PORT
     (
-        dat_o : OUT std_ulogic_vector(WIDTH - 1 DOWNTO 0);
-        dat_i : IN std_ulogic_vector(WIDTH - 1 DOWNTO 0);
-        adr_i : IN std_ulogic_vector(SIZE - 1 DOWNTO 0);
-        wre_i : IN std_ulogic_vector(3 DOWNTO 0);
-        ena_i : IN std_ulogic;
-        clk_i : IN std_ulogic
+        dat_o : OUT std_logic_vector(WIDTH - 1 DOWNTO 0);
+        dat_i : IN std_logic_vector(WIDTH - 1 DOWNTO 0);
+        adr_i : IN std_logic_vector(SIZE - 1 DOWNTO 0);
+        wre_i : IN std_logic_vector(3 DOWNTO 0);
+        ena_i : IN std_logic;
+        clk_i : IN std_logic
     );
     END COMPONENT;
 
@@ -60,13 +60,13 @@ PACKAGE std_Pkg IS
     );
     PORT
     (
-        dat_o   : OUT std_ulogic_vector(WIDTH - 1 DOWNTO 0);
-        adr_i   : IN std_ulogic_vector(SIZE - 1 DOWNTO 0);
-        ena_i   : IN std_ulogic;
-        dat_w_i : IN std_ulogic_vector(WIDTH - 1 DOWNTO 0);
-        adr_w_i : IN std_ulogic_vector(SIZE - 1 DOWNTO 0);
-        wre_i   : IN std_ulogic;
-        clk_i   : IN std_ulogic
+        dat_o   : OUT std_logic_vector(WIDTH - 1 DOWNTO 0);
+        adr_i   : IN std_logic_vector(SIZE - 1 DOWNTO 0);
+        ena_i   : IN std_logic;
+        dat_w_i : IN std_logic_vector(WIDTH - 1 DOWNTO 0);
+        adr_w_i : IN std_logic_vector(SIZE - 1 DOWNTO 0);
+        wre_i   : IN std_logic;
+        clk_i   : IN std_logic
     );
     END COMPONENT;
 
@@ -74,27 +74,27 @@ PACKAGE std_Pkg IS
 -- FUNCTIONS IN STD_PKG
 ----------------------------------------------------------------------------------------------
 
-    FUNCTION v_or(d : std_ulogic_vector) RETURN std_ulogic;
-    FUNCTION is_zero(d : std_ulogic_vector) RETURN std_ulogic;
-    FUNCTION is_not_zero(d : std_ulogic_vector) RETURN std_ulogic;
-    FUNCTION my_conv_integer(a: std_ulogic_vector) RETURN integer;
-    FUNCTION notx(d : std_ulogic_vector) RETURN boolean;
-    FUNCTION compare(a, b : std_ulogic_vector) RETURN std_ulogic;
-    FUNCTION multiply(a, b : std_ulogic_vector) RETURN std_ulogic_vector;
-    FUNCTION sign_extend(value: std_ulogic_vector; fill: std_ulogic; size: positive) RETURN std_ulogic_vector;
-    FUNCTION add(a, b : std_ulogic_vector; ci: std_ulogic) RETURN std_ulogic_vector;
-    FUNCTION increment(a : std_ulogic_vector) RETURN std_ulogic_vector;
-    FUNCTION shift(value : std_ulogic_vector(31 DOWNTO 0); shamt: std_ulogic_vector(4 DOWNTO 0); s: std_ulogic; t: std_ulogic) RETURN std_ulogic_vector;
-    FUNCTION shift_left(value : std_ulogic_vector(31 DOWNTO 0); shamt : std_ulogic_vector(4 DOWNTO 0)) RETURN std_ulogic_vector;
-    FUNCTION shift_right(value : std_ulogic_vector(31 DOWNTO 0); shamt : std_ulogic_vector(4 DOWNTO 0); padding: std_ulogic) RETURN std_ulogic_vector;
+    FUNCTION v_or(d : std_logic_vector) RETURN std_logic;
+    FUNCTION is_zero(d : std_logic_vector) RETURN std_logic;
+    FUNCTION is_not_zero(d : std_logic_vector) RETURN std_logic;
+    FUNCTION my_conv_integer(a: std_logic_vector) RETURN integer;
+    FUNCTION notx(d : std_logic_vector) RETURN boolean;
+    FUNCTION compare(a, b : std_logic_vector) RETURN std_logic;
+    FUNCTION multiply(a, b : std_logic_vector) RETURN std_logic_vector;
+    FUNCTION sign_extend(value: std_logic_vector; fill: std_logic; size: positive) RETURN std_logic_vector;
+    FUNCTION add(a, b : std_logic_vector; ci: std_logic) RETURN std_logic_vector;
+    FUNCTION increment(a : std_logic_vector) RETURN std_logic_vector;
+    FUNCTION shift(value : std_logic_vector(31 DOWNTO 0); shamt: std_logic_vector(4 DOWNTO 0); s: std_logic; t: std_logic) RETURN std_logic_vector;
+    FUNCTION shift_left(value : std_logic_vector(31 DOWNTO 0); shamt : std_logic_vector(4 DOWNTO 0)) RETURN std_logic_vector;
+    FUNCTION shift_right(value : std_logic_vector(31 DOWNTO 0); shamt : std_logic_vector(4 DOWNTO 0); padding: std_logic) RETURN std_logic_vector;
 
 END std_Pkg;
 
 PACKAGE BODY std_Pkg IS
 
 -- Unary OR reduction
-    FUNCTION v_or(d : std_ulogic_vector) RETURN std_ulogic IS
-        VARIABLE z : std_ulogic;
+    FUNCTION v_or(d : std_logic_vector) RETURN std_logic IS
+        VARIABLE z : std_logic;
     BEGIN
         z := '0';
         IF notx (d) THEN
@@ -106,8 +106,8 @@ PACKAGE BODY std_Pkg IS
     END;
 
 -- Check for ones in the vector
-    FUNCTION is_not_zero(d : std_ulogic_vector) RETURN std_ulogic IS
-        VARIABLE z : std_ulogic_vector(d'range);
+    FUNCTION is_not_zero(d : std_logic_vector) RETURN std_logic IS
+        VARIABLE z : std_logic_vector(d'range);
     BEGIN
         z := (OTHERS => '0');
         IF notx(d) THEN
@@ -124,13 +124,13 @@ PACKAGE BODY std_Pkg IS
     END;
 
 -- Check for ones in the vector
-    FUNCTION is_zero(d : std_ulogic_vector) RETURN std_ulogic IS
+    FUNCTION is_zero(d : std_logic_vector) RETURN std_logic IS
     BEGIN
         RETURN NOT is_not_zero(d);
     END;
 
     -- rewrite conv_integer to avoid modelsim warnings
-    FUNCTION my_conv_integer(a : std_ulogic_vector) RETURN integer IS
+    FUNCTION my_conv_integer(a : std_logic_vector) RETURN integer IS
         VARIABLE res : integer RANGE 0 TO 2**a'length-1;
     BEGIN
         res := 0;
@@ -140,8 +140,8 @@ PACKAGE BODY std_Pkg IS
         RETURN res;
     END;
 
-    FUNCTION compare(a, b : std_ulogic_vector) RETURN std_ulogic IS
-        VARIABLE z : std_ulogic;
+    FUNCTION compare(a, b : std_logic_vector) RETURN std_logic IS
+        VARIABLE z : std_logic;
     BEGIN
 
         IF notx(a & b) AND a = b THEN
@@ -153,7 +153,7 @@ PACKAGE BODY std_Pkg IS
     END;
 
 -- Unary NOT X test
-    FUNCTION notx(d : std_ulogic_vector) RETURN boolean IS
+    FUNCTION notx(d : std_logic_vector) RETURN boolean IS
         VARIABLE res : boolean;
     BEGIN
         res := true;
@@ -182,7 +182,7 @@ PACKAGE BODY std_Pkg IS
 -- --      else
 -- --         (rD) ← (rA) >> (rB)[27:31]
 
-    FUNCTION shift(value: std_ulogic_vector(31 DOWNTO 0); shamt: std_ulogic_vector(4 DOWNTO 0); s: std_ulogic; t: std_ulogic) RETURN std_ulogic_vector IS
+    FUNCTION shift(value: std_logic_vector(31 DOWNTO 0); shamt: std_logic_vector(4 DOWNTO 0); s: std_logic; t: std_logic) RETURN std_logic_vector IS
     BEGIN
         IF s = '1' THEN
             -- left arithmetic or logical shift
@@ -198,9 +198,9 @@ PACKAGE BODY std_Pkg IS
         END IF;
     END;
 
-    FUNCTION shift_left(value: std_ulogic_vector(31 DOWNTO 0); shamt: std_ulogic_vector(4 DOWNTO 0)) RETURN std_ulogic_vector IS
-        VARIABLE result: std_ulogic_vector(31 DOWNTO 0);
-        VARIABLE paddings: std_ulogic_vector(15 DOWNTO 0);
+    FUNCTION shift_left(value: std_logic_vector(31 DOWNTO 0); shamt: std_logic_vector(4 DOWNTO 0)) RETURN std_logic_vector IS
+        VARIABLE result: std_logic_vector(31 DOWNTO 0);
+        VARIABLE paddings: std_logic_vector(15 DOWNTO 0);
     BEGIN
 
         paddings := (OTHERS => '0');
@@ -214,9 +214,9 @@ PACKAGE BODY std_Pkg IS
 
     END;
 
-    FUNCTION shift_right(value: std_ulogic_vector(31 DOWNTO 0); shamt: std_ulogic_vector(4 DOWNTO 0); padding: std_ulogic) RETURN std_ulogic_vector IS
-        VARIABLE result: std_ulogic_vector(31 DOWNTO 0);
-        VARIABLE paddings: std_ulogic_vector(15 DOWNTO 0);
+    FUNCTION shift_right(value: std_logic_vector(31 DOWNTO 0); shamt: std_logic_vector(4 DOWNTO 0); padding: std_logic) RETURN std_logic_vector IS
+        VARIABLE result: std_logic_vector(31 DOWNTO 0);
+        VARIABLE paddings: std_logic_vector(15 DOWNTO 0);
     BEGIN
 
         paddings := (OTHERS => padding);
@@ -230,37 +230,37 @@ PACKAGE BODY std_Pkg IS
 
     END;
 
-    FUNCTION multiply(a, b: std_ulogic_vector) RETURN std_ulogic_vector IS
-        VARIABLE x: std_ulogic_vector (a'length + b'length - 1 DOWNTO 0);
+    FUNCTION multiply(a, b: std_logic_vector) RETURN std_logic_vector IS
+        VARIABLE x: std_logic_vector (a'length + b'length - 1 DOWNTO 0);
     BEGIN
-        x := std_ulogic_vector(signed(a) * signed(b));
+        x := std_logic_vector(signed(a) * signed(b));
         RETURN x(31 DOWNTO 0);
     END;
 
-    FUNCTION sign_extend(value: std_ulogic_vector; fill: std_ulogic; size: positive) RETURN std_ulogic_vector IS
-        VARIABLE a: std_ulogic_vector (size - 1 DOWNTO 0);
+    FUNCTION sign_extend(value: std_logic_vector; fill: std_logic; size: positive) RETURN std_logic_vector IS
+        VARIABLE a: std_logic_vector (size - 1 DOWNTO 0);
     BEGIN
         a(size - 1 DOWNTO value'length) := (OTHERS => fill);
         a(value'length - 1 DOWNTO 0) := value;
         return a;
     END;
 
-    FUNCTION add(a, b : std_ulogic_vector; ci: std_ulogic) RETURN std_ulogic_vector IS
-        VARIABLE x : std_ulogic_vector(a'length + 1 DOWNTO 0);
+    FUNCTION add(a, b : std_logic_vector; ci: std_logic) RETURN std_logic_vector IS
+        VARIABLE x : std_logic_vector(a'length + 1 DOWNTO 0);
     BEGIN
         x := (OTHERS => '0');
         IF notx (a & b & ci) THEN
-            x := std_ulogic_vector(signed('0' & a & '1') + signed('0' & b & ci));
+            x := std_logic_vector(signed('0' & a & '1') + signed('0' & b & ci));
         END IF;
         RETURN x(a'length + 1 DOWNTO 1);
     END;
 
-    FUNCTION increment(a : std_ulogic_vector) RETURN std_ulogic_vector IS
-        VARIABLE x : std_ulogic_vector(a'length-1 DOWNTO 0);
+    FUNCTION increment(a : std_logic_vector) RETURN std_logic_vector IS
+        VARIABLE x : std_logic_vector(a'length-1 DOWNTO 0);
     BEGIN
         x := (OTHERS => '0');
         IF notx (a) THEN
-            x := std_ulogic_vector(signed(a) + 1);
+            x := std_logic_vector(signed(a) + 1);
         END IF;
         RETURN x;
     END;

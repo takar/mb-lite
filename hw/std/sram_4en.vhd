@@ -28,12 +28,12 @@ ENTITY sram_4en IS GENERIC
 );
 PORT
 (
-    dat_o : OUT std_ulogic_vector(WIDTH - 1 DOWNTO 0);
-    dat_i : IN std_ulogic_vector(WIDTH - 1 DOWNTO 0);
-    adr_i : IN std_ulogic_vector(SIZE - 1 DOWNTO 0);
-    wre_i : IN std_ulogic_vector(WIDTH/8 - 1 DOWNTO 0);
-    ena_i : IN std_ulogic;
-    clk_i : IN std_ulogic
+    dat_o : OUT std_logic_vector(WIDTH - 1 DOWNTO 0);
+    dat_i : IN std_logic_vector(WIDTH - 1 DOWNTO 0);
+    adr_i : IN std_logic_vector(SIZE - 1 DOWNTO 0);
+    wre_i : IN std_logic_vector(WIDTH/8 - 1 DOWNTO 0);
+    ena_i : IN std_logic;
+    clk_i : IN std_logic
 );
 END sram_4en;
 
@@ -42,8 +42,8 @@ END sram_4en;
 -- cryptic synthesization errors on this implementation, so it is not the default.
 ARCHITECTURE arch2 OF sram_4en IS
 
-    TYPE ram_type IS array(2 ** SIZE - 1 DOWNTO 0) OF std_ulogic_vector(WIDTH - 1 DOWNTO 0);
-    TYPE sel_type IS array(WIDTH/8 - 1 DOWNTO 0) OF std_ulogic_vector(7 DOWNTO 0);
+    TYPE ram_type IS array(2 ** SIZE - 1 DOWNTO 0) OF std_logic_vector(WIDTH - 1 DOWNTO 0);
+    TYPE sel_type IS array(WIDTH/8 - 1 DOWNTO 0) OF std_logic_vector(7 DOWNTO 0);
 
     SIGNAL ram: ram_type;
     SIGNAL di: sel_type;

@@ -33,10 +33,10 @@ END core_wb_adapter;
 
 ARCHITECTURE arch OF core_wb_adapter IS
 
-    SIGNAL r_cyc_o : std_ulogic;
-    SIGNAL rin_cyc_o : std_ulogic;
-    SIGNAL r_data, rin_data : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-    SIGNAL s_wait : std_ulogic;
+    SIGNAL r_cyc_o : std_logic;
+    SIGNAL rin_cyc_o : std_logic;
+    SIGNAL r_data, rin_data : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+    SIGNAL s_wait : std_logic;
 
 BEGIN
 

@@ -32,8 +32,8 @@ END wb_stdio;
 ARCHITECTURE arch OF wb_stdio IS
     CONSTANT ack_assert_delay : TIME := 2 ns;
     CONSTANT ack_deassert_delay : TIME := 2 ns;
-    SIGNAL ack : std_ulogic;
-    SIGNAL chr_dat : std_ulogic_vector(31 DOWNTO 0);
+    SIGNAL ack : std_logic;
+    SIGNAL chr_dat : std_logic_vector(31 DOWNTO 0);
     SIGNAL chr_cnt : natural := 0;
 BEGIN
     wb_o.int_o <= '0';
@@ -41,7 +41,7 @@ BEGIN
     -- Character device
     stdio: PROCESS(wb_i.clk_i)
         VARIABLE s    : line;
-        VARIABLE byte : std_ulogic_vector(7 DOWNTO 0);
+        VARIABLE byte : std_logic_vector(7 DOWNTO 0);
         VARIABLE char : character;
     BEGIN
         IF rising_edge(wb_i.clk_i) THEN

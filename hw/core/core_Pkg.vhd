@@ -39,144 +39,144 @@ PACKAGE core_Pkg IS
         alu_op      : alu_operation;
         alu_src_a   : src_type_a;
         alu_src_b   : src_type_b;
-        operation   : std_ulogic;
+        operation   : std_logic;
         carry       : carry_type;
         carry_keep  : carry_keep_type;
         branch_cond : branch_condition;
-        delay       : std_ulogic;
+        delay       : std_logic;
     END RECORD;
 
     TYPE ctrl_memory IS RECORD
-        mem_write     : std_ulogic;
-        mem_read      : std_ulogic;
+        mem_write     : std_logic;
+        mem_read      : std_logic;
         transfer_size : transfer_size;
     END RECORD;
 
     TYPE ctrl_memory_writeback_type IS RECORD
-        mem_read      : std_ulogic;
+        mem_read      : std_logic;
         transfer_size : transfer_size;
     END RECORD;
 
     TYPE forward_type IS RECORD
-        reg_d     : std_ulogic_vector(CFG_GPRF_SIZE - 1 DOWNTO 0);
-        reg_write : std_ulogic;
+        reg_d     : std_logic_vector(CFG_GPRF_SIZE - 1 DOWNTO 0);
+        reg_write : std_logic;
     END RECORD;
 
     TYPE imem_in_type IS RECORD
-        dat_i : std_ulogic_vector(CFG_IMEM_WIDTH - 1 DOWNTO 0);
+        dat_i : std_logic_vector(CFG_IMEM_WIDTH - 1 DOWNTO 0);
     END RECORD;
 
     TYPE imem_out_type IS RECORD
-        adr_o : std_ulogic_vector(CFG_IMEM_SIZE - 1 DOWNTO 0);
-        ena_o : std_ulogic;
+        adr_o : std_logic_vector(CFG_IMEM_SIZE - 1 DOWNTO 0);
+        ena_o : std_logic;
     END RECORD;
 
     TYPE fetch_in_type IS RECORD
-        hazard : std_ulogic;
-        branch : std_ulogic;
-        branch_target : std_ulogic_vector(CFG_IMEM_SIZE - 1 DOWNTO 0);
+        hazard : std_logic;
+        branch : std_logic;
+        branch_target : std_logic_vector(CFG_IMEM_SIZE - 1 DOWNTO 0);
     END RECORD;
 
     TYPE fetch_out_type IS RECORD
-        program_counter : std_ulogic_vector(CFG_IMEM_SIZE - 1 DOWNTO 0);
+        program_counter : std_logic_vector(CFG_IMEM_SIZE - 1 DOWNTO 0);
     END RECORD;
 
     TYPE gprf_out_type IS RECORD
-        dat_a_o : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        dat_b_o : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        dat_d_o : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        dat_a_o : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        dat_b_o : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        dat_d_o : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
     END RECORD;
 
     TYPE decode_in_type IS RECORD
-        program_counter : std_ulogic_vector(CFG_IMEM_SIZE - 1 DOWNTO 0);
-        instruction     : std_ulogic_vector(CFG_IMEM_WIDTH - 1 DOWNTO 0);
+        program_counter : std_logic_vector(CFG_IMEM_SIZE - 1 DOWNTO 0);
+        instruction     : std_logic_vector(CFG_IMEM_WIDTH - 1 DOWNTO 0);
         ctrl_wb         : forward_type;
         ctrl_mem_wb     : ctrl_memory_writeback_type;
-        mem_result      : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        alu_result      : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        interrupt       : std_ulogic;
-        flush_id        : std_ulogic;
+        mem_result      : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        alu_result      : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        interrupt       : std_logic;
+        flush_id        : std_logic;
     END RECORD;
 
     TYPE decode_out_type IS RECORD
-        reg_a           : std_ulogic_vector(CFG_GPRF_SIZE - 1 DOWNTO 0);
-        reg_b           : std_ulogic_vector(CFG_GPRF_SIZE - 1 DOWNTO 0);
-        imm             : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        program_counter : std_ulogic_vector(CFG_IMEM_SIZE - 1 DOWNTO 0);
-        hazard          : std_ulogic;
+        reg_a           : std_logic_vector(CFG_GPRF_SIZE - 1 DOWNTO 0);
+        reg_b           : std_logic_vector(CFG_GPRF_SIZE - 1 DOWNTO 0);
+        imm             : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        program_counter : std_logic_vector(CFG_IMEM_SIZE - 1 DOWNTO 0);
+        hazard          : std_logic;
         ctrl_ex         : ctrl_execution;
         ctrl_mem        : ctrl_memory;
         ctrl_wb         : forward_type;
-        fwd_dec_result  : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        fwd_dec_result  : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
         fwd_dec         : forward_type;
     END RECORD;
 
     TYPE gprf_in_type IS RECORD
-        adr_a_i : std_ulogic_vector(CFG_GPRF_SIZE - 1 DOWNTO 0);
-        adr_b_i : std_ulogic_vector(CFG_GPRF_SIZE - 1 DOWNTO 0);
-        adr_d_i : std_ulogic_vector(CFG_GPRF_SIZE - 1 DOWNTO 0);
-        dat_w_i : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        adr_w_i : std_ulogic_vector(CFG_GPRF_SIZE - 1 DOWNTO 0);
-        wre_i   : std_ulogic;
+        adr_a_i : std_logic_vector(CFG_GPRF_SIZE - 1 DOWNTO 0);
+        adr_b_i : std_logic_vector(CFG_GPRF_SIZE - 1 DOWNTO 0);
+        adr_d_i : std_logic_vector(CFG_GPRF_SIZE - 1 DOWNTO 0);
+        dat_w_i : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        adr_w_i : std_logic_vector(CFG_GPRF_SIZE - 1 DOWNTO 0);
+        wre_i   : std_logic;
     END RECORD;
 
     TYPE execute_out_type IS RECORD
-        alu_result      : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        dat_d           : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        branch          : std_ulogic;
-        program_counter : std_ulogic_vector(CFG_IMEM_SIZE - 1 DOWNTO 0);
-        flush_id        : std_ulogic;
+        alu_result      : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        dat_d           : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        branch          : std_logic;
+        program_counter : std_logic_vector(CFG_IMEM_SIZE - 1 DOWNTO 0);
+        flush_id        : std_logic;
         ctrl_mem        : ctrl_memory;
         ctrl_wb         : forward_type;
     END RECORD;
 
     TYPE execute_in_type IS RECORD
-        reg_a           : std_ulogic_vector(CFG_GPRF_SIZE  - 1 DOWNTO 0);
-        dat_a           : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        reg_b           : std_ulogic_vector(CFG_GPRF_SIZE  - 1 DOWNTO 0);
-        dat_b           : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        dat_d           : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        imm             : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        program_counter : std_ulogic_vector(CFG_IMEM_SIZE - 1 DOWNTO 0);
+        reg_a           : std_logic_vector(CFG_GPRF_SIZE  - 1 DOWNTO 0);
+        dat_a           : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        reg_b           : std_logic_vector(CFG_GPRF_SIZE  - 1 DOWNTO 0);
+        dat_b           : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        dat_d           : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        imm             : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        program_counter : std_logic_vector(CFG_IMEM_SIZE - 1 DOWNTO 0);
         fwd_dec         : forward_type;
-        fwd_dec_result  : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        fwd_dec_result  : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
         fwd_mem         : forward_type;
         ctrl_ex         : ctrl_execution;
         ctrl_mem        : ctrl_memory;
         ctrl_wb         : forward_type;
         ctrl_mem_wb     : ctrl_memory_writeback_type;
-        mem_result      : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        alu_result      : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        mem_result      : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        alu_result      : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
 
     END RECORD;
 
     TYPE mem_in_type IS RECORD
-        dat_d           : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        alu_result      : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        mem_result      : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        program_counter : std_ulogic_vector(CFG_IMEM_SIZE - 1 DOWNTO 0);
-        branch          : std_ulogic;
+        dat_d           : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        alu_result      : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        mem_result      : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        program_counter : std_logic_vector(CFG_IMEM_SIZE - 1 DOWNTO 0);
+        branch          : std_logic;
         ctrl_mem        : ctrl_memory;
         ctrl_wb         : forward_type;
     END RECORD;
 
     TYPE mem_out_type IS RECORD
-        alu_result  : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        alu_result  : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
         ctrl_wb     : forward_type;
         ctrl_mem_wb : ctrl_memory_writeback_type;
     END RECORD;
 
     TYPE dmem_in_type IS RECORD
-        dat_i : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        ena_i : std_ulogic;
+        dat_i : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        ena_i : std_logic;
     END RECORD;
 
     TYPE dmem_out_type IS RECORD
-        dat_o : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        adr_o : std_ulogic_vector(CFG_DMEM_SIZE - 1 DOWNTO 0);
-        sel_o : std_ulogic_vector(3 DOWNTO 0);
-        we_o  : std_ulogic;
-        ena_o : std_ulogic;
+        dat_o : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        adr_o : std_logic_vector(CFG_DMEM_SIZE - 1 DOWNTO 0);
+        sel_o : std_logic_vector(3 DOWNTO 0);
+        we_o  : std_logic;
+        ena_o : std_logic;
     END RECORD;
 
     TYPE dmem_in_array_type IS ARRAY(NATURAL RANGE <>) OF dmem_in_type;
@@ -184,40 +184,40 @@ PACKAGE core_Pkg IS
 
     -- WB-master inputs from the wb-slaves
     TYPE wb_mst_in_type IS RECORD
-        clk_i : std_ulogic;                      -- master clock input
-        rst_i : std_ulogic;                      -- synchronous active high reset
-        dat_i : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0); -- databus input
-        ack_i : std_ulogic;                      -- buscycle acknowledge input
-        int_i : std_ulogic;                      -- interrupt request input
+        clk_i : std_logic;                      -- master clock input
+        rst_i : std_logic;                      -- synchronous active high reset
+        dat_i : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0); -- databus input
+        ack_i : std_logic;                      -- buscycle acknowledge input
+        int_i : std_logic;                      -- interrupt request input
     END RECORD;
 
     -- WB-master outputs to the wb-slaves
     TYPE wb_mst_out_type IS RECORD
-        adr_o : std_ulogic_vector(CFG_DMEM_SIZE - 1 DOWNTO 0);  -- address bits
-        dat_o : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0); -- databus output
-        we_o  : std_ulogic;                      -- write enable output
-        stb_o : std_ulogic;                      -- strobe signals
-        sel_o : std_ulogic_vector(3 DOWNTO 0);   -- select output array
-        cyc_o : std_ulogic;                      -- valid BUS cycle output
+        adr_o : std_logic_vector(CFG_DMEM_SIZE - 1 DOWNTO 0);  -- address bits
+        dat_o : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0); -- databus output
+        we_o  : std_logic;                      -- write enable output
+        stb_o : std_logic;                      -- strobe signals
+        sel_o : std_logic_vector(3 DOWNTO 0);   -- select output array
+        cyc_o : std_logic;                      -- valid BUS cycle output
     END RECORD;
 
     -- WB-slave inputs, from the WB-master
     TYPE wb_slv_in_type IS RECORD
-        clk_i : std_ulogic;                     -- master clock input
-        rst_i : std_ulogic;                     -- synchronous active high reset
-        adr_i : std_ulogic_vector(CFG_DMEM_SIZE - 1 DOWNTO 0); -- address bits
-        dat_i : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0); -- Databus input
-        we_i  : std_ulogic;                     -- Write enable input
-        stb_i : std_ulogic;                     -- strobe signals / core select signal
-        sel_i : std_ulogic_vector(3 DOWNTO 0);   -- select output array
-        cyc_i : std_ulogic;                     -- valid BUS cycle input
+        clk_i : std_logic;                     -- master clock input
+        rst_i : std_logic;                     -- synchronous active high reset
+        adr_i : std_logic_vector(CFG_DMEM_SIZE - 1 DOWNTO 0); -- address bits
+        dat_i : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0); -- Databus input
+        we_i  : std_logic;                     -- Write enable input
+        stb_i : std_logic;                     -- strobe signals / core select signal
+        sel_i : std_logic_vector(3 DOWNTO 0);   -- select output array
+        cyc_i : std_logic;                     -- valid BUS cycle input
     END RECORD;
 
     -- WB-slave outputs to the WB-master
     TYPE wb_slv_out_type IS RECORD
-        dat_o : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0); -- Databus output
-        ack_o : std_ulogic;                     -- Bus cycle acknowledge output
-        int_o : std_ulogic;                     -- interrupt request output
+        dat_o : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0); -- Databus output
+        ack_o : std_logic;                     -- Bus cycle acknowledge output
+        int_o : std_logic;                     -- interrupt request output
     END RECORD;
 
 ----------------------------------------------------------------------------------------------
@@ -237,9 +237,9 @@ PACKAGE core_Pkg IS
         dmem_o : OUT dmem_out_type;
         imem_i : IN imem_in_type;
         dmem_i : IN dmem_in_type;
-        int_i  : IN std_ulogic;
-        rst_i  : IN std_ulogic;
-        clk_i  : IN std_ulogic
+        int_i  : IN std_logic;
+        rst_i  : IN std_logic;
+        clk_i  : IN std_logic
     );
     END COMPONENT;
 
@@ -282,9 +282,9 @@ PACKAGE core_Pkg IS
         fetch_o : OUT fetch_out_type;
         imem_o  : OUT imem_out_type;
         fetch_i : IN fetch_in_type;
-        rst_i   : IN std_ulogic;
-        ena_i   : IN std_ulogic;
-        clk_i   : IN std_ulogic
+        rst_i   : IN std_logic;
+        ena_i   : IN std_logic;
+        clk_i   : IN std_logic
     );
     END COMPONENT;
 
@@ -300,9 +300,9 @@ PACKAGE core_Pkg IS
         decode_o : OUT decode_out_type;
         gprf_o   : OUT gprf_out_type;
         decode_i : IN decode_in_type;
-        ena_i    : IN std_ulogic;
-        rst_i    : IN std_ulogic;
-        clk_i    : IN std_ulogic
+        ena_i    : IN std_logic;
+        rst_i    : IN std_logic;
+        clk_i    : IN std_logic
     );
     END COMPONENT;
 
@@ -310,8 +310,8 @@ PACKAGE core_Pkg IS
     (
         gprf_o : OUT gprf_out_type;
         gprf_i : IN gprf_in_type;
-        ena_i  : IN std_ulogic;
-        clk_i  : IN std_ulogic
+        ena_i  : IN std_logic;
+        clk_i  : IN std_logic
     );
     END COMPONENT;
 
@@ -324,9 +324,9 @@ PACKAGE core_Pkg IS
     (
         exec_o : OUT execute_out_type;
         exec_i : IN execute_in_type;
-        ena_i  : IN std_ulogic;
-        rst_i  : IN std_ulogic;
-        clk_i  : IN std_ulogic
+        ena_i  : IN std_logic;
+        rst_i  : IN std_logic;
+        clk_i  : IN std_logic
     );
     END COMPONENT;
 
@@ -335,9 +335,9 @@ PACKAGE core_Pkg IS
         mem_o  : OUT mem_out_type;
         dmem_o : OUT dmem_out_type;
         mem_i  : IN mem_in_type;
-        ena_i  : IN std_ulogic;
-        rst_i  : IN std_ulogic;
-        clk_i  : IN std_ulogic
+        ena_i  : IN std_logic;
+        rst_i  : IN std_logic;
+        clk_i  : IN std_logic
     );
     END COMPONENT;
 
@@ -351,18 +351,18 @@ PACKAGE core_Pkg IS
         s_dmem_o : OUT dmem_out_array_type;
         m_dmem_o : IN dmem_out_type;
         s_dmem_i : IN dmem_in_array_type;
-        clk_i    : IN std_ulogic
+        clk_i    : IN std_logic
     );
     END COMPONENT;
 ----------------------------------------------------------------------------------------------
 -- FUNCTIONS USED IN MB-LITE
 ----------------------------------------------------------------------------------------------
 
-    FUNCTION select_register_data(reg_dat, reg, wb_dat : std_ulogic_vector; write : std_ulogic) RETURN std_ulogic_vector;
-    FUNCTION forward_condition(reg_write : std_ulogic; reg_a, reg_d : std_ulogic_vector) RETURN std_ulogic;
-    FUNCTION align_mem_load(data : std_ulogic_vector; size : transfer_size; address : std_ulogic_vector) RETURN std_ulogic_vector;
-    FUNCTION align_mem_store(data : std_ulogic_vector; size : transfer_size) RETURN std_ulogic_vector;
-    FUNCTION decode_mem_store(address : std_ulogic_vector(1 DOWNTO 0); size : transfer_size) RETURN std_ulogic_vector;
+    FUNCTION select_register_data(reg_dat, reg, wb_dat : std_logic_vector; write : std_logic) RETURN std_logic_vector;
+    FUNCTION forward_condition(reg_write : std_logic; reg_a, reg_d : std_logic_vector) RETURN std_logic;
+    FUNCTION align_mem_load(data : std_logic_vector; size : transfer_size; address : std_logic_vector) RETURN std_logic_vector;
+    FUNCTION align_mem_store(data : std_logic_vector; size : transfer_size) RETURN std_logic_vector;
+    FUNCTION decode_mem_store(address : std_logic_vector(1 DOWNTO 0); size : transfer_size) RETURN std_logic_vector;
 
 END core_Pkg;
 
@@ -372,8 +372,8 @@ PACKAGE BODY core_Pkg IS
     --      A) zero
     --      B) bypass value read from register file
     --      C) value from register file
-    FUNCTION select_register_data(reg_dat, reg, wb_dat : std_ulogic_vector; write : std_ulogic) RETURN std_ulogic_vector IS
-        VARIABLE tmp : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+    FUNCTION select_register_data(reg_dat, reg, wb_dat : std_logic_vector; write : std_logic) RETURN std_logic_vector IS
+        VARIABLE tmp : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
     BEGIN
         IF CFG_REG_FORCE_ZERO = true AND is_zero(reg) = '1' THEN
             tmp := (OTHERS => '0');
@@ -387,13 +387,13 @@ PACKAGE BODY core_Pkg IS
 
     -- This function checks if a forwarding condition is met. The condition is met of register A and D match
     -- and the signal needs to be written back to the register file.
-    FUNCTION forward_condition(reg_write : std_ulogic; reg_a, reg_d : std_ulogic_vector ) RETURN std_ulogic IS
+    FUNCTION forward_condition(reg_write : std_logic; reg_a, reg_d : std_logic_vector ) RETURN std_logic IS
     BEGIN
         RETURN reg_write AND compare(reg_a, reg_d);
     END forward_condition;
 
     -- This function aligns the memory load operation. The load byte-order is defined here.
-    FUNCTION align_mem_load(data : std_ulogic_vector; size : transfer_size; address : std_ulogic_vector ) RETURN std_ulogic_vector IS
+    FUNCTION align_mem_load(data : std_logic_vector; size : transfer_size; address : std_logic_vector ) RETURN std_logic_vector IS
     BEGIN
         IF CFG_BYTE_ORDER = false THEN
             -- Little endian decoding
@@ -439,7 +439,7 @@ PACKAGE BODY core_Pkg IS
     END align_mem_load;
 
     -- This function repeats the operand to all positions memory store operation.
-    FUNCTION align_mem_store(data : std_ulogic_vector; size : transfer_size) RETURN std_ulogic_vector IS
+    FUNCTION align_mem_store(data : std_logic_vector; size : transfer_size) RETURN std_logic_vector IS
     BEGIN
         CASE size IS
             WHEN byte     => RETURN data( 7 DOWNTO 0) & data( 7 DOWNTO 0) & data(7 DOWNTO 0) & data(7 DOWNTO 0);
@@ -449,7 +449,7 @@ PACKAGE BODY core_Pkg IS
     END align_mem_store;
 
     -- This function selects the correct bytes for memory writes. The store byte-order (MSB / LSB) can be defined here.
-    FUNCTION decode_mem_store(address : std_ulogic_vector(1 DOWNTO 0); size : transfer_size) RETURN std_ulogic_vector IS
+    FUNCTION decode_mem_store(address : std_logic_vector(1 DOWNTO 0); size : transfer_size) RETURN std_logic_vector IS
     BEGIN
         IF CFG_BYTE_ORDER = false THEN
             -- Little endian encoding

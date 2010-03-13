@@ -26,8 +26,8 @@ ENTITY gprf IS PORT
 (
     gprf_o : OUT gprf_out_type;
     gprf_i : IN gprf_in_type;
-    ena_i  : IN std_ulogic;
-    clk_i  : IN std_ulogic
+    ena_i  : IN std_logic;
+    clk_i  : IN std_logic
 );
 END gprf;
 

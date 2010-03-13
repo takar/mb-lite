@@ -33,9 +33,9 @@ PORT
     dmem_o : OUT dmem_out_type;
     imem_i : IN imem_in_type;
     dmem_i : IN dmem_in_type;
-    int_i  : IN std_ulogic;
-    rst_i  : IN std_ulogic;
-    clk_i  : IN std_ulogic
+    int_i  : IN std_logic;
+    rst_i  : IN std_logic;
+    clk_i  : IN std_logic
 );
 END core;
 
@@ -55,7 +55,7 @@ ARCHITECTURE arch OF core IS
     SIGNAL mem_i : mem_in_type;
     SIGNAL mem_o : mem_out_type;
 
-    SIGNAL ena_i : std_ulogic;
+    SIGNAL ena_i : std_logic;
 
 BEGIN
 

@@ -55,7 +55,7 @@ PACKAGE config_Pkg IS
     -- BUS PARAMETERS
     ----------------------------------------------------------------------------------------------
 
-    TYPE memory_map_type IS ARRAY(natural RANGE <>) OF std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+    TYPE memory_map_type IS ARRAY(natural RANGE <>) OF std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
     CONSTANT CFG_NUM_SLAVES : positive := 2;
     CONSTANT CFG_MEMORY_MAP : memory_map_type(0 TO CFG_NUM_SLAVES) := (X"00000000", X"00FFFFFF", X"FFFFFFFF");
 

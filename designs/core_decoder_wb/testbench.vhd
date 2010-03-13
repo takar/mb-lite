@@ -45,15 +45,15 @@ ARCHITECTURE arch OF testbench IS
     SIGNAL s_wb_i : wb_slv_in_type;
     SIGNAL s_wb_o : wb_slv_out_type;
 
-    SIGNAL sys_clk_i : std_ulogic := '0';
-    SIGNAL sys_int_i : std_ulogic;
-    SIGNAL sys_rst_i : std_ulogic;
+    SIGNAL sys_clk_i : std_logic := '0';
+    SIGNAL sys_int_i : std_logic;
+    SIGNAL sys_rst_i : std_logic;
 
     CONSTANT rom_size : integer := 16;
     CONSTANT ram_size : integer := 16;
 
-    SIGNAL sel_o : std_ulogic_vector(3 DOWNTO 0);
-    SIGNAL ena_o : std_ulogic;
+    SIGNAL sel_o : std_logic_vector(3 DOWNTO 0);
+    SIGNAL ena_o : std_logic;
 
 BEGIN
 

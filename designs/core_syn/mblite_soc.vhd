@@ -22,15 +22,15 @@ USE mblite.std_Pkg.ALL;
 
 ENTITY mblite_soc IS PORT
 (
-    sys_clk_i : IN std_ulogic;
-    dbg_dmem_o_we_o : OUT std_ulogic;
-    dbg_dmem_o_ena_o : OUT std_ulogic;
-    sys_rst_i : IN std_ulogic;
-    sys_ena_i : IN std_ulogic;
-    sys_int_i : IN std_ulogic;
-    dbg_dmem_o_adr_o : OUT std_ulogic_vector (31 DOWNTO 0);
-    dbg_dmem_o_dat_o : OUT std_ulogic_vector (31 DOWNTO 0);
-    dbg_dmem_o_sel_o : OUT std_ulogic_vector ( 3 DOWNTO 0)
+    sys_clk_i : IN std_logic;
+    dbg_dmem_o_we_o : OUT std_logic;
+    dbg_dmem_o_ena_o : OUT std_logic;
+    sys_rst_i : IN std_logic;
+    sys_ena_i : IN std_logic;
+    sys_int_i : IN std_logic;
+    dbg_dmem_o_adr_o : OUT std_logic_vector (31 DOWNTO 0);
+    dbg_dmem_o_dat_o : OUT std_logic_vector (31 DOWNTO 0);
+    dbg_dmem_o_sel_o : OUT std_logic_vector ( 3 DOWNTO 0)
 );
 END mblite_soc;
 
@@ -43,12 +43,12 @@ ARCHITECTURE arch OF mblite_soc IS
     );
     PORT
     (
-        dat_o : OUT std_ulogic_vector(WIDTH - 1 DOWNTO 0);
-        dat_i : IN std_ulogic_vector(WIDTH - 1 DOWNTO 0);
-        adr_i : IN std_ulogic_vector(SIZE - 1 DOWNTO 0);
-        wre_i : IN std_ulogic;
-        ena_i : IN std_ulogic;
-        clk_i : IN std_ulogic
+        dat_o : OUT std_logic_vector(WIDTH - 1 DOWNTO 0);
+        dat_i : IN std_logic_vector(WIDTH - 1 DOWNTO 0);
+        adr_i : IN std_logic_vector(SIZE - 1 DOWNTO 0);
+        wre_i : IN std_logic;
+        ena_i : IN std_logic;
+        clk_i : IN std_logic
     );
     END COMPONENT;
 
@@ -59,12 +59,12 @@ ARCHITECTURE arch OF mblite_soc IS
     );
     PORT
     (
-        dat_o : OUT std_ulogic_vector(WIDTH - 1 DOWNTO 0);
-        dat_i : IN std_ulogic_vector(WIDTH - 1 DOWNTO 0);
-        adr_i : IN std_ulogic_vector(SIZE - 1 DOWNTO 0);
-        wre_i : IN std_ulogic_vector(3 DOWNTO 0);
-        ena_i : IN std_ulogic;
-        clk_i : IN std_ulogic
+        dat_o : OUT std_logic_vector(WIDTH - 1 DOWNTO 0);
+        dat_i : IN std_logic_vector(WIDTH - 1 DOWNTO 0);
+        adr_i : IN std_logic_vector(SIZE - 1 DOWNTO 0);
+        wre_i : IN std_logic_vector(3 DOWNTO 0);
+        ena_i : IN std_logic;
+        clk_i : IN std_logic
     );
     END COMPONENT;
 
@@ -73,10 +73,10 @@ ARCHITECTURE arch OF mblite_soc IS
     SIGNAL dmem_i : dmem_in_type;
     SIGNAL imem_i : imem_in_type;
 
-    SIGNAL mem_enable : std_ulogic;
-    SIGNAL sel_o : std_ulogic_vector(3 DOWNTO 0);
+    SIGNAL mem_enable : std_logic;
+    SIGNAL sel_o : std_logic_vector(3 DOWNTO 0);
 
-    CONSTANT std_out_adr : std_ulogic_vector(CFG_DMEM_SIZE - 1 DOWNTO 0) := X"FFFFFFC0";
+    CONSTANT std_out_adr : std_logic_vector(CFG_DMEM_SIZE - 1 DOWNTO 0) := X"FFFFFFC0";
     CONSTANT rom_size : integer := 13;
     CONSTANT ram_size : integer := 13;
 

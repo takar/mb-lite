@@ -28,9 +28,9 @@ ENTITY fetch IS PORT
     fetch_o : OUT fetch_out_type;
     imem_o  : OUT imem_out_type;
     fetch_i : IN fetch_in_type;
-    rst_i   : IN std_ulogic;
-    ena_i   : IN std_ulogic;
-    clk_i   : IN std_ulogic
+    rst_i   : IN std_logic;
+    ena_i   : IN std_logic;
+    clk_i   : IN std_logic
 );
 END fetch;
 

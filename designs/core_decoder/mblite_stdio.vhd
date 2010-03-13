@@ -26,7 +26,7 @@ ENTITY mblite_stdio IS PORT
 (
     dmem_i : OUT dmem_in_type;
     dmem_o : IN dmem_out_type;
-    clk_i  : IN std_ulogic
+    clk_i  : IN std_logic
 );
 END mblite_stdio;
 
@@ -35,7 +35,7 @@ BEGIN
     -- Character device
     stdio: PROCESS(clk_i)
             VARIABLE s    : line;
-            VARIABLE byte : std_ulogic_vector(7 DOWNTO 0);
+            VARIABLE byte : std_logic_vector(7 DOWNTO 0);
             VARIABLE char : character;
         BEGIN
             dmem_i.dat_i <= (OTHERS => '0');

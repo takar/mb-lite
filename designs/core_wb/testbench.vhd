@@ -34,18 +34,18 @@ ARCHITECTURE arch OF testbench IS
     SIGNAL wb_o : wb_mst_out_type;
     SIGNAL wb_i : wb_mst_in_type;
 
-    SIGNAL sys_clk_i : std_ulogic := '0';
-    SIGNAL sys_int_i : std_ulogic;
-    SIGNAL sys_rst_i : std_ulogic;
+    SIGNAL sys_clk_i : std_logic := '0';
+    SIGNAL sys_int_i : std_logic;
+    SIGNAL sys_rst_i : std_logic;
 
-    CONSTANT std_out_adr : std_ulogic_vector(CFG_DMEM_SIZE - 1 DOWNTO 0) := X"FFFFFFC0";
-    SIGNAL std_out_ack : std_ulogic;
+    CONSTANT std_out_adr : std_logic_vector(CFG_DMEM_SIZE - 1 DOWNTO 0) := X"FFFFFFC0";
+    SIGNAL std_out_ack : std_logic;
 
-    SIGNAL stdo_ena : std_ulogic;
+    SIGNAL stdo_ena : std_logic;
 
-    SIGNAL dmem_ena : std_ulogic;
-    SIGNAL dmem_dat : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-    SIGNAL dmem_sel : std_ulogic_vector(3 DOWNTO 0);
+    SIGNAL dmem_ena : std_logic;
+    SIGNAL dmem_dat : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+    SIGNAL dmem_sel : std_logic_vector(3 DOWNTO 0);
 
     CONSTANT rom_size : integer := 16;
     CONSTANT ram_size : integer := 16;
@@ -73,7 +73,7 @@ BEGIN
     -- Character device
     wb_stdio_slave: PROCESS(sys_clk_i)
         VARIABLE s    : line;
-        VARIABLE byte : std_ulogic_vector(7 DOWNTO 0);
+        VARIABLE byte : std_logic_vector(7 DOWNTO 0);
         VARIABLE char : character;
     BEGIN
         IF rising_edge(sys_clk_i) THEN

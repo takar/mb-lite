@@ -34,15 +34,15 @@ ENTITY mem IS PORT
     mem_o  : OUT mem_out_type;
     dmem_o : OUT dmem_out_type;
     mem_i  : IN mem_in_type;
-    ena_i  : IN std_ulogic;
-    rst_i  : IN std_ulogic;
-    clk_i  : IN std_ulogic
+    ena_i  : IN std_logic;
+    rst_i  : IN std_logic;
+    clk_i  : IN std_logic
 );
 END mem;
 
 ARCHITECTURE arch OF mem IS
     SIGNAL r, rin : mem_out_type;
-    SIGNAL mem_result : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+    SIGNAL mem_result : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
 BEGIN
     -- connect pipline signals
     mem_o.ctrl_wb     <= r.ctrl_wb;
@@ -58,7 +58,7 @@ BEGIN
 
     mem_comb: PROCESS(mem_i, mem_i.ctrl_wb, mem_i.ctrl_mem, r, r.ctrl_wb, r.ctrl_mem_wb)
         VARIABLE v : mem_out_type;
-        VARIABLE intermediate : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        VARIABLE intermediate : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
     BEGIN
 
         v := r;

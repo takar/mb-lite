@@ -34,21 +34,21 @@ ARCHITECTURE arch OF testbench IS
     SIGNAL dmem_i : dmem_in_type;
     SIGNAL imem_i : imem_in_type;
 
-    SIGNAL sys_clk_i : std_ulogic := '0';
-    SIGNAL sys_int_i : std_ulogic := '0';
-    SIGNAL sys_rst_i : std_ulogic := '0';
-    SIGNAL sys_ena_i : std_ulogic := '1';
+    SIGNAL sys_clk_i : std_logic := '0';
+    SIGNAL sys_int_i : std_logic := '0';
+    SIGNAL sys_rst_i : std_logic := '0';
+    SIGNAL sys_ena_i : std_logic := '1';
 
-    CONSTANT std_out_adr : std_ulogic_vector(CFG_DMEM_SIZE - 1 DOWNTO 0) := X"FFFFFFC0";
+    CONSTANT std_out_adr : std_logic_vector(CFG_DMEM_SIZE - 1 DOWNTO 0) := X"FFFFFFC0";
     CONSTANT rom_size : integer := 16;
     CONSTANT ram_size : integer := 16;
 
-    SIGNAL mem_enable : std_ulogic;
-    SIGNAL chr_enable : std_ulogic;
-    SIGNAL chr_read : std_ulogic;
-    SIGNAL sel_o : std_ulogic_vector(3 DOWNTO 0);
-    SIGNAL mem_dat : std_ulogic_vector(31 DOWNTO 0);
-    SIGNAL chr_dat : std_ulogic_vector(31 DOWNTO 0);
+    SIGNAL mem_enable : std_logic;
+    SIGNAL chr_enable : std_logic;
+    SIGNAL chr_read : std_logic;
+    SIGNAL sel_o : std_logic_vector(3 DOWNTO 0);
+    SIGNAL mem_dat : std_logic_vector(31 DOWNTO 0);
+    SIGNAL chr_dat : std_logic_vector(31 DOWNTO 0);
     SIGNAL chr_cnt : integer := 0;
 
 BEGIN
@@ -69,7 +69,7 @@ BEGIN
     -- Character device
     stdio: PROCESS(sys_clk_i)
         VARIABLE s    : line;
-        VARIABLE byte : std_ulogic_vector(7 DOWNTO 0);
+        VARIABLE byte : std_logic_vector(7 DOWNTO 0);
         VARIABLE char : character;
     BEGIN
         IF rising_edge(sys_clk_i) THEN

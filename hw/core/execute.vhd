@@ -32,17 +32,17 @@ PORT
 (
     exec_o : OUT execute_out_type;
     exec_i : IN execute_in_type;
-    ena_i  : IN std_ulogic;
-    rst_i  : IN std_ulogic;
-    clk_i  : IN std_ulogic
+    ena_i  : IN std_logic;
+    rst_i  : IN std_logic;
+    clk_i  : IN std_logic
 );
 END execute;
 
 ARCHITECTURE arch OF execute IS
 
     TYPE execute_reg_type IS RECORD
-        carry      : std_ulogic;
-        flush_ex   : std_ulogic;
+        carry      : std_logic;
+        flush_ex   : std_logic;
     END RECORD;
 
     SIGNAL r, rin : execute_out_type;
@@ -62,17 +62,17 @@ BEGIN
         VARIABLE v : execute_out_type;
         VARIABLE v_reg : execute_reg_type;
 
-        VARIABLE alu_src_a : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        VARIABLE alu_src_b : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        VARIABLE carry : std_ulogic;
+        VARIABLE alu_src_a : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        VARIABLE alu_src_b : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        VARIABLE carry : std_logic;
 
-        VARIABLE result : std_ulogic_vector(CFG_DMEM_WIDTH DOWNTO 0);
-        VARIABLE result_add : std_ulogic_vector(CFG_DMEM_WIDTH DOWNTO 0);
-        VARIABLE zero : std_ulogic;
+        VARIABLE result : std_logic_vector(CFG_DMEM_WIDTH DOWNTO 0);
+        VARIABLE result_add : std_logic_vector(CFG_DMEM_WIDTH DOWNTO 0);
+        VARIABLE zero : std_logic;
 
-        VARIABLE dat_a, dat_b : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        VARIABLE sel_dat_a, sel_dat_b, sel_dat_d : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        VARIABLE mem_result : std_ulogic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        VARIABLE dat_a, dat_b : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        VARIABLE sel_dat_a, sel_dat_b, sel_dat_d : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        VARIABLE mem_result : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
 
     BEGIN
 

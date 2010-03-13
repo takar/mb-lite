@@ -42,14 +42,14 @@ ARCHITECTURE arch OF testbench IS
     );
     END COMPONENT;
 
-    SIGNAL sys_clk_i : std_ulogic := '0';
-    SIGNAL sys_int_i : std_ulogic := '0';
-    SIGNAL sys_rst_i : std_ulogic := '0';
-    SIGNAL sys_ena_i : std_ulogic := '1';
+    SIGNAL sys_clk_i : std_logic := '0';
+    SIGNAL sys_int_i : std_logic := '0';
+    SIGNAL sys_rst_i : std_logic := '0';
+    SIGNAL sys_ena_i : std_logic := '1';
 
     SIGNAL dmem_o : dmem_out_type;
 
-    CONSTANT std_out_adr : std_ulogic_vector(CFG_DMEM_SIZE - 1 DOWNTO 0) := X"FFFFFFC0";
+    CONSTANT std_out_adr : std_logic_vector(CFG_DMEM_SIZE - 1 DOWNTO 0) := X"FFFFFFC0";
 BEGIN
 
     sys_clk_i <= NOT sys_clk_i AFTER 10000 ps;
@@ -79,7 +79,7 @@ BEGIN
     -- Character device
     stdio: PROCESS(sys_clk_i)
         VARIABLE s    : line;
-        VARIABLE byte : std_ulogic_vector(7 DOWNTO 0);
+        VARIABLE byte : std_logic_vector(7 DOWNTO 0);
         VARIABLE char : character;
     BEGIN
 

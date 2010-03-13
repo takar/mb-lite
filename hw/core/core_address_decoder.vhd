@@ -31,15 +31,15 @@ PORT
     s_dmem_o : OUT dmem_out_array_type(G_NUM_SLAVES - 1 DOWNTO 0);
     m_dmem_o : IN dmem_out_type;
     s_dmem_i : IN dmem_in_array_type(G_NUM_SLAVES - 1 DOWNTO 0);
-    clk_i : std_ulogic
+    clk_i : std_logic
 );
 END core_address_decoder;
 
 ARCHITECTURE arch OF core_address_decoder IS
 
     -- Decodes the address based on the memory map. Returns "1" if 0 or 1 slave is attached.
-    FUNCTION decode(adr : std_ulogic_vector) RETURN std_ulogic_vector IS
-        VARIABLE result : std_ulogic_vector(G_NUM_SLAVES - 1 DOWNTO 0);
+    FUNCTION decode(adr : std_logic_vector) RETURN std_logic_vector IS
+        VARIABLE result : std_logic_vector(G_NUM_SLAVES - 1 DOWNTO 0);
     BEGIN
         result := (OTHERS => '1');
         IF G_NUM_SLAVES > 1 AND notx(adr) THEN
@@ -54,7 +54,7 @@ ARCHITECTURE arch OF core_address_decoder IS
         RETURN result;
     END FUNCTION;
 
-    FUNCTION demux(dmem_i : dmem_in_array_type; ce, r_ce : std_ulogic_vector) RETURN dmem_in_type IS
+    FUNCTION demux(dmem_i : dmem_in_array_type; ce, r_ce : std_logic_vector) RETURN dmem_in_type IS
         VARIABLE dmem : dmem_in_type;
     BEGIN
         dmem := dmem_i(0);
@@ -71,7 +71,7 @@ ARCHITECTURE arch OF core_address_decoder IS
         RETURN dmem;
     END FUNCTION;
 
-    SIGNAL r_ce, ce : std_ulogic_vector(G_NUM_SLAVES - 1 DOWNTO 0) := (OTHERS => '1');
+    SIGNAL r_ce, ce : std_logic_vector(G_NUM_SLAVES - 1 DOWNTO 0) := (OTHERS => '1');
 
 BEGIN
 

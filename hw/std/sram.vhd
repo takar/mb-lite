@@ -25,17 +25,17 @@ ENTITY sram IS GENERIC
 );
 PORT
 (
-    dat_o : OUT std_ulogic_vector(WIDTH - 1 DOWNTO 0);
-    dat_i : IN std_ulogic_vector(WIDTH - 1 DOWNTO 0);
-    adr_i : IN std_ulogic_vector(SIZE - 1 DOWNTO 0);
-    wre_i : IN std_ulogic;
-    ena_i : IN std_ulogic;
-    clk_i : IN std_ulogic
+    dat_o : OUT std_logic_vector(WIDTH - 1 DOWNTO 0);
+    dat_i : IN std_logic_vector(WIDTH - 1 DOWNTO 0);
+    adr_i : IN std_logic_vector(SIZE - 1 DOWNTO 0);
+    wre_i : IN std_logic;
+    ena_i : IN std_logic;
+    clk_i : IN std_logic
 );
 END sram;
 
 ARCHITECTURE arch OF sram IS
-    TYPE ram_type IS array(2 ** SIZE - 1 DOWNTO 0) OF std_ulogic_vector(WIDTH - 1 DOWNTO 0);
+    TYPE ram_type IS array(2 ** SIZE - 1 DOWNTO 0) OF std_logic_vector(WIDTH - 1 DOWNTO 0);
     SIGNAL ram :  ram_type;
 BEGIN
     PROCESS(clk_i)
