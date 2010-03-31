@@ -1,0 +1,3 @@
+[2010-03-30] Added utility sw/util/bin2vhd_32b.c
+[2010-03-30] Added utility sw/util/bin2vhd_4x8b.c
+[2010-03-31] Fixed the bug with BGT and BGE instruction

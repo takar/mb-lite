@@ -202,8 +202,8 @@ BEGIN
                 WHEN BNE => v.branch := NOT zero;
                 WHEN BLT => v.branch := dat_a(CFG_DMEM_WIDTH - 1);
                 WHEN BLE => v.branch := dat_a(CFG_DMEM_WIDTH - 1) OR zero;
-                WHEN BGT => v.branch := NOT dat_a(CFG_DMEM_WIDTH - 1);
-                WHEN BGE => v.branch := NOT dat_a(CFG_DMEM_WIDTH - 1) OR zero;
+                WHEN BGT => v.branch := NOT (dat_a(CFG_DMEM_WIDTH - 1) OR zero);
+                WHEN BGE => v.branch := NOT dat_a(CFG_DMEM_WIDTH - 1);
                 WHEN OTHERS => v.branch := '0';
             END CASE;
         END IF;
