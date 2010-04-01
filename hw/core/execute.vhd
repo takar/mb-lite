@@ -14,244 +14,244 @@
 --
 ----------------------------------------------------------------------------------------------
 
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-LIBRARY mblite;
-USE mblite.config_Pkg.ALL;
-USE mblite.core_Pkg.ALL;
-USE mblite.std_Pkg.ALL;
+library mblite;
+use mblite.config_Pkg.all;
+use mblite.core_Pkg.all;
+use mblite.std_Pkg.all;
 
-ENTITY execute IS GENERIC
+entity execute is generic
 (
     G_USE_HW_MUL : boolean := CFG_USE_HW_MUL;
     G_USE_BARREL : boolean := CFG_USE_BARREL
 );
-PORT
+port
 (
-    exec_o : OUT execute_out_type;
-    exec_i : IN execute_in_type;
-    ena_i  : IN std_logic;
-    rst_i  : IN std_logic;
-    clk_i  : IN std_logic
+    exec_o : out execute_out_type;
+    exec_i : in execute_in_type;
+    ena_i  : in std_logic;
+    rst_i  : in std_logic;
+    clk_i  : in std_logic
 );
-END execute;
+end execute;
 
-ARCHITECTURE arch OF execute IS
+architecture arch of execute is
 
-    TYPE execute_reg_type IS RECORD
-        carry      : std_logic;
-        flush_ex   : std_logic;
-    END RECORD;
+    type execute_reg_type is record
+        carry    : std_logic;
+        flush_ex : std_logic;
+    end record;
 
-    SIGNAL r, rin : execute_out_type;
-    SIGNAL reg, regin : execute_reg_type;
+    signal r, rin     : execute_out_type;
+    signal reg, regin : execute_reg_type;
 
-BEGIN
+begin
 
     exec_o <= r;
 
-    execute_comb: PROCESS(exec_i,exec_i.fwd_mem,exec_i.ctrl_ex,
-            exec_i.ctrl_wb,exec_i.ctrl_mem,
+    execute_comb: process(exec_i,exec_i.fwd_mem,exec_i.ctrl_ex,
+            exec_i.ctrl_wrb,exec_i.ctrl_mem,
             exec_i.ctrl_mem.transfer_size,
-            exec_i.ctrl_mem_wb,exec_i.fwd_dec,
+            exec_i.ctrl_mem_wrb,exec_i.fwd_dec,
             r,r.ctrl_mem,r.ctrl_mem.transfer_size,
-            r.ctrl_wb,reg)
+            r.ctrl_wrb,reg)
 
-        VARIABLE v : execute_out_type;
-        VARIABLE v_reg : execute_reg_type;
+        variable v : execute_out_type;
+        variable v_reg : execute_reg_type;
 
-        VARIABLE alu_src_a : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        VARIABLE alu_src_b : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        VARIABLE carry : std_logic;
+        variable alu_src_a : std_logic_vector(CFG_DMEM_WIDTH - 1 downto 0);
+        variable alu_src_b : std_logic_vector(CFG_DMEM_WIDTH - 1 downto 0);
+        variable carry : std_logic;
 
-        VARIABLE result : std_logic_vector(CFG_DMEM_WIDTH DOWNTO 0);
-        VARIABLE result_add : std_logic_vector(CFG_DMEM_WIDTH DOWNTO 0);
-        VARIABLE zero : std_logic;
+        variable result : std_logic_vector(CFG_DMEM_WIDTH downto 0);
+        variable result_add : std_logic_vector(CFG_DMEM_WIDTH downto 0);
+        variable zero : std_logic;
 
-        VARIABLE dat_a, dat_b : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        VARIABLE sel_dat_a, sel_dat_b, sel_dat_d : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        VARIABLE mem_result : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
+        variable dat_a, dat_b : std_logic_vector(CFG_DMEM_WIDTH - 1 downto 0);
+        variable sel_dat_a, sel_dat_b, sel_dat_d : std_logic_vector(CFG_DMEM_WIDTH - 1 downto 0);
+        variable mem_result : std_logic_vector(CFG_DMEM_WIDTH - 1 downto 0);
 
-    BEGIN
+    begin
 
         v := r;
 
         sel_dat_a := select_register_data(exec_i.dat_a, exec_i.reg_a, exec_i.fwd_dec_result, forward_condition(exec_i.fwd_dec.reg_write, exec_i.fwd_dec.reg_d, exec_i.reg_a));
         sel_dat_b := select_register_data(exec_i.dat_b, exec_i.reg_b, exec_i.fwd_dec_result, forward_condition(exec_i.fwd_dec.reg_write, exec_i.fwd_dec.reg_d, exec_i.reg_b));
-        sel_dat_d := select_register_data(exec_i.dat_d, exec_i.ctrl_wb.reg_d, exec_i.fwd_dec_result, forward_condition(exec_i.fwd_dec.reg_write, exec_i.fwd_dec.reg_d, exec_i.ctrl_wb.reg_d));
+        sel_dat_d := select_register_data(exec_i.dat_d, exec_i.ctrl_wrb.reg_d, exec_i.fwd_dec_result, forward_condition(exec_i.fwd_dec.reg_write, exec_i.fwd_dec.reg_d, exec_i.ctrl_wrb.reg_d));
 
-        IF reg.flush_ex = '1' THEN
+        if reg.flush_ex = '1' then
             v.ctrl_mem.mem_write := '0';
             v.ctrl_mem.mem_read := '0';
-            v.ctrl_wb.reg_write := '0';
-            v.ctrl_wb.reg_d := (OTHERS => '0');
-        ELSE
+            v.ctrl_wrb.reg_write := '0';
+            v.ctrl_wrb.reg_d := (others => '0');
+        else
             v.ctrl_mem := exec_i.ctrl_mem;
-            v.ctrl_wb := exec_i.ctrl_wb;
-        END IF;
+            v.ctrl_wrb := exec_i.ctrl_wrb;
+        end if;
 
-        IF exec_i.ctrl_mem_wb.mem_read = '1' THEN
-            mem_result := align_mem_load(exec_i.mem_result, exec_i.ctrl_mem_wb.transfer_size, exec_i.alu_result(1 DOWNTO 0));
-        ELSE
+        if exec_i.ctrl_mem_wrb.mem_read = '1' then
+            mem_result := align_mem_load(exec_i.mem_result, exec_i.ctrl_mem_wrb.transfer_size, exec_i.alu_result(1 downto 0));
+        else
             mem_result := exec_i.alu_result;
-        END IF;
+        end if;
 
-        IF forward_condition(r.ctrl_wb.reg_write, r.ctrl_wb.reg_d, exec_i.reg_a) = '1' THEN
+        if forward_condition(r.ctrl_wrb.reg_write, r.ctrl_wrb.reg_d, exec_i.reg_a) = '1' then
             -- Forward Execution Result to REG a
             dat_a := r.alu_result;
-        ELSIF forward_condition(exec_i.fwd_mem.reg_write, exec_i.fwd_mem.reg_d, exec_i.reg_a) = '1' THEN
+        elsif forward_condition(exec_i.fwd_mem.reg_write, exec_i.fwd_mem.reg_d, exec_i.reg_a) = '1' then
             -- Forward Memory Result to REG a
             dat_a := mem_result;
-        ELSE
+        else
             -- DEFAULT: value of REG a
             dat_a := sel_dat_a;
-        END IF;
+        end if;
 
-        IF forward_condition(r.ctrl_wb.reg_write, r.ctrl_wb.reg_d, exec_i.reg_b) = '1' THEN
+        if forward_condition(r.ctrl_wrb.reg_write, r.ctrl_wrb.reg_d, exec_i.reg_b) = '1' then
             -- Forward (latched) Execution Result to REG b
             dat_b := r.alu_result;
-        ELSIF forward_condition(exec_i.fwd_mem.reg_write, exec_i.fwd_mem.reg_d, exec_i.reg_b) = '1' THEN
+        elsif forward_condition(exec_i.fwd_mem.reg_write, exec_i.fwd_mem.reg_d, exec_i.reg_b) = '1' then
             -- Forward Memory Result to REG b
             dat_b := mem_result;
-        ELSE
+        else
             -- DEFAULT: value of REG b
             dat_b := sel_dat_b;
-        END IF;
+        end if;
 
-        IF forward_condition(r.ctrl_wb.reg_write, r.ctrl_wb.reg_d, exec_i.ctrl_wb.reg_d) = '1' THEN
+        if forward_condition(r.ctrl_wrb.reg_write, r.ctrl_wrb.reg_d, exec_i.ctrl_wrb.reg_d) = '1' then
             -- Forward Execution Result to REG d
             v.dat_d := align_mem_store(r.alu_result, exec_i.ctrl_mem.transfer_size);
-        ELSIF forward_condition(exec_i.fwd_mem.reg_write, exec_i.fwd_mem.reg_d, exec_i.ctrl_wb.reg_d) = '1' THEN
+        elsif forward_condition(exec_i.fwd_mem.reg_write, exec_i.fwd_mem.reg_d, exec_i.ctrl_wrb.reg_d) = '1' then
             -- Forward Memory Result to REG d
             v.dat_d := align_mem_store(mem_result, exec_i.ctrl_mem.transfer_size);
-        ELSE
+        else
             -- DEFAULT: value of REG d
             v.dat_d := align_mem_store(sel_dat_d, exec_i.ctrl_mem.transfer_size);
-        END IF;
+        end if;
 
         -- Set the first operand of the ALU
-        CASE exec_i.ctrl_ex.alu_src_a IS
-            WHEN ALU_SRC_PC       => alu_src_a := sign_extend(exec_i.program_counter, '0', 32);
-            WHEN ALU_SRC_NOT_REGA => alu_src_a := NOT dat_a;
-            WHEN ALU_SRC_ZERO     => alu_src_a := (OTHERS => '0');
-            WHEN OTHERS           => alu_src_a := dat_a;
-        END CASE;
+        case exec_i.ctrl_ex.alu_src_a is
+            when ALU_SRC_PC       => alu_src_a := sign_extend(exec_i.program_counter, '0', 32);
+            when ALU_SRC_NOT_REGA => alu_src_a := not dat_a;
+            when ALU_SRC_ZERO     => alu_src_a := (others => '0');
+            when others           => alu_src_a := dat_a;
+        end case;
 
         -- Set the second operand of the ALU
-        CASE exec_i.ctrl_ex.alu_src_b IS
-            WHEN ALU_SRC_IMM      => alu_src_b := exec_i.imm;
-            WHEN ALU_SRC_NOT_IMM  => alu_src_b := NOT exec_i.imm;
-            WHEN ALU_SRC_NOT_REGB => alu_src_b := NOT dat_b;
-            WHEN OTHERS           => alu_src_b := dat_b;
-        END CASE;
+        case exec_i.ctrl_ex.alu_src_b is
+            when ALU_SRC_IMM      => alu_src_b := exec_i.imm;
+            when ALU_SRC_NOT_IMM  => alu_src_b := not exec_i.imm;
+            when ALU_SRC_NOT_REGB => alu_src_b := not dat_b;
+            when others           => alu_src_b := dat_b;
+        end case;
 
         -- Determine value of carry in
-        CASE exec_i.ctrl_ex.carry IS
-            WHEN CARRY_ALU   => carry := reg.carry;
-            WHEN CARRY_ONE   => carry := '1';
-            WHEN CARRY_ARITH => carry := alu_src_a(CFG_DMEM_WIDTH - 1);
-            WHEN OTHERS      => carry := '0';
-        END CASE;
+        case exec_i.ctrl_ex.carry is
+            when CARRY_ALU   => carry := reg.carry;
+            when CARRY_ONE   => carry := '1';
+            when CARRY_ARITH => carry := alu_src_a(CFG_DMEM_WIDTH - 1);
+            when others      => carry := '0';
+        end case;
 
         result_add := add(alu_src_a, alu_src_b, carry);
 
-        CASE exec_i.ctrl_ex.alu_op IS
-            WHEN ALU_ADD    => result := result_add;
-            WHEN ALU_OR     => result := '0' & (alu_src_a OR alu_src_b);
-            WHEN ALU_AND    => result := '0' & (alu_src_a AND alu_src_b);
-            WHEN ALU_XOR    => result := '0' & (alu_src_a XOR alu_src_b);
-            WHEN ALU_SHIFT  => result := alu_src_a(0) & carry & alu_src_a(CFG_DMEM_WIDTH - 1 DOWNTO 1);
-            WHEN ALU_SEXT8  => result := '0' & sign_extend(alu_src_a(7 DOWNTO 0), alu_src_a(7), 32);
-            WHEN ALU_SEXT16 => result := '0' & sign_extend(alu_src_a(15 DOWNTO 0), alu_src_a(15), 32);
-            WHEN ALU_MUL =>
-                IF G_USE_HW_MUL = true THEN
+        case exec_i.ctrl_ex.alu_op is
+            when ALU_ADD    => result := result_add;
+            when ALU_OR     => result := '0' & (alu_src_a or alu_src_b);
+            when ALU_AND    => result := '0' & (alu_src_a and alu_src_b);
+            when ALU_XOR    => result := '0' & (alu_src_a xor alu_src_b);
+            when ALU_SHIFT  => result := alu_src_a(0) & carry & alu_src_a(CFG_DMEM_WIDTH - 1 downto 1);
+            when ALU_SEXT8  => result := '0' & sign_extend(alu_src_a(7 downto 0), alu_src_a(7), 32);
+            when ALU_SEXT16 => result := '0' & sign_extend(alu_src_a(15 downto 0), alu_src_a(15), 32);
+            when ALU_MUL =>
+                if G_USE_HW_MUL = true then
                     result := '0' & multiply(alu_src_a, alu_src_b);
-                ELSE
-                    result := (OTHERS => '0');
-                END IF;
-            WHEN ALU_BS =>
-                IF G_USE_BARREL = true THEN
-                    result := '0' & shift(alu_src_a, alu_src_b(4 DOWNTO 0), exec_i.imm(10), exec_i.imm(9));
-                ELSE
-                    result := (OTHERS => '0');
-                END IF;
-            WHEN OTHERS =>
-                result := (OTHERS => '0');
-                REPORT "Invalid ALU operation" SEVERITY FAILURE;
-        END CASE;
+                else
+                    result := (others => '0');
+                end if;
+            when ALU_BS =>
+                if G_USE_BARREL = true then
+                    result := '0' & shift(alu_src_a, alu_src_b(4 downto 0), exec_i.imm(10), exec_i.imm(9));
+                else
+                    result := (others => '0');
+                end if;
+            when others =>
+                result := (others => '0');
+                report "Invalid ALU operation" severity FAILURE;
+        end case;
 
         -- Set carry register
-        IF exec_i.ctrl_ex.carry_keep = CARRY_KEEP THEN
+        if exec_i.ctrl_ex.carry_keep = CARRY_KEEP then
             v_reg.carry := reg.carry;
-        ELSE
+        else
             v_reg.carry := result(CFG_DMEM_WIDTH);
-        END IF;
+        end if;
 
         zero := is_zero(dat_a);
 
         -- Overwrite branch condition
-        IF reg.flush_ex = '1' THEN
+        if reg.flush_ex = '1' then
             v.branch := '0';
-        ELSE
+        else
             -- Determine branch condition
-            CASE exec_i.ctrl_ex.branch_cond IS
-                WHEN BNC => v.branch := '1';
-                WHEN BEQ => v.branch := zero;
-                WHEN BNE => v.branch := NOT zero;
-                WHEN BLT => v.branch := dat_a(CFG_DMEM_WIDTH - 1);
-                WHEN BLE => v.branch := dat_a(CFG_DMEM_WIDTH - 1) OR zero;
-                WHEN BGT => v.branch := NOT (dat_a(CFG_DMEM_WIDTH - 1) OR zero);
-                WHEN BGE => v.branch := NOT dat_a(CFG_DMEM_WIDTH - 1);
-                WHEN OTHERS => v.branch := '0';
-            END CASE;
-        END IF;
+            case exec_i.ctrl_ex.branch_cond is
+                when BNC => v.branch := '1';
+                when BEQ => v.branch := zero;
+                when BNE => v.branch := not zero;
+                when BLT => v.branch := dat_a(CFG_DMEM_WIDTH - 1);
+                when BLE => v.branch := dat_a(CFG_DMEM_WIDTH - 1) or zero;
+                when BGT => v.branch := not (dat_a(CFG_DMEM_WIDTH - 1) or zero);
+                when BGE => v.branch := not dat_a(CFG_DMEM_WIDTH - 1);
+                when others => v.branch := '0';
+            end case;
+        end if;
 
         -- Handle CMPU
-        IF ( exec_i.ctrl_ex.operation AND NOT (alu_src_a(CFG_DMEM_WIDTH - 1) XOR alu_src_b(CFG_DMEM_WIDTH - 1))) = '1' THEN
+        if ( exec_i.ctrl_ex.operation and not (alu_src_a(CFG_DMEM_WIDTH - 1) xor alu_src_b(CFG_DMEM_WIDTH - 1))) = '1' then
             -- Set MSB
-            v.alu_result(CFG_DMEM_WIDTH - 1 DOWNTO 0) := (NOT result(CFG_DMEM_WIDTH - 1)) & result(CFG_DMEM_WIDTH - 2 DOWNTO 0);
-        ELSE
+            v.alu_result(CFG_DMEM_WIDTH - 1 downto 0) := (not result(CFG_DMEM_WIDTH - 1)) & result(CFG_DMEM_WIDTH - 2 downto 0);
+        else
             -- Use ALU result
-            v.alu_result := result(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-        END IF;
+            v.alu_result := result(CFG_DMEM_WIDTH - 1 downto 0);
+        end if;
 
         v.program_counter := exec_i.program_counter;
 
         -- Determine flush signals
         v.flush_id := v.branch;
-        v_reg.flush_ex := v.branch AND NOT exec_i.ctrl_ex.delay;
+        v_reg.flush_ex := v.branch and not exec_i.ctrl_ex.delay;
 
-        rin <= v;
+        rin   <= v;
         regin <= v_reg;
 
-    END PROCESS;
+    end process;
 
-    execute_seq: PROCESS(clk_i)
-        PROCEDURE proc_execute_reset IS
-        BEGIN
-            r.alu_result             <= (OTHERS => '0');
-            r.dat_d                  <= (OTHERS => '0');
+    execute_seq: process(clk_i)
+        procedure proc_execute_reset is
+        begin
+            r.alu_result             <= (others => '0');
+            r.dat_d                  <= (others => '0');
             r.branch                 <= '0';
-            r.program_counter        <= (OTHERS => '0');
+            r.program_counter        <= (others => '0');
             r.flush_id               <= '0';
             r.ctrl_mem.mem_write     <= '0';
             r.ctrl_mem.mem_read      <= '0';
             r.ctrl_mem.transfer_size <= WORD;
-            r.ctrl_wb.reg_d          <= (OTHERS => '0');
-            r.ctrl_wb.reg_write      <= '0';
+            r.ctrl_wrb.reg_d         <= (others => '0');
+            r.ctrl_wrb.reg_write     <= '0';
             reg.carry                <= '0';
             reg.flush_ex             <= '0';
-        END PROCEDURE proc_execute_reset;
-    BEGIN
-        IF rising_edge(clk_i) THEN
-            IF rst_i = '1' THEN
+        end procedure proc_execute_reset;
+    begin
+        if rising_edge(clk_i) then
+            if rst_i = '1' then
                 proc_execute_reset;
-            ELSIF ena_i = '1' THEN
-                r <= rin;
+            elsif ena_i = '1' then
+                r   <= rin;
                 reg <= regin;
-            END IF;
-        END IF;
-    END PROCESS;
-END arch;
+            end if;
+        end if;
+    end process;
+end arch;

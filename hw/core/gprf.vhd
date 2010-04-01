@@ -13,36 +13,36 @@
 --
 ----------------------------------------------------------------------------------------------
 
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-LIBRARY mblite;
-USE mblite.config_Pkg.ALL;
-USE mblite.core_Pkg.ALL;
-USE mblite.std_Pkg.ALL;
+library mblite;
+use mblite.config_Pkg.all;
+use mblite.core_Pkg.all;
+use mblite.std_Pkg.all;
 
-ENTITY gprf IS PORT
+entity gprf is port
 (
-    gprf_o : OUT gprf_out_type;
-    gprf_i : IN gprf_in_type;
-    ena_i  : IN std_logic;
-    clk_i  : IN std_logic
+    gprf_o : out gprf_out_type;
+    gprf_i : in gprf_in_type;
+    ena_i  : in std_logic;
+    clk_i  : in std_logic
 );
-END gprf;
+end gprf;
 
 -- This architecture is the default implementation. It
 -- consists of three dual port memories. Other
 -- architectures can be added while configurations can
 -- control the implemented architecture.
-ARCHITECTURE arch OF gprf IS
-BEGIN
-    a : dsram GENERIC MAP
+architecture arch of gprf is
+begin
+    a : dsram generic map
     (
-        WIDTH   => CFG_DMEM_WIDTH,
-        SIZE    => CFG_GPRF_SIZE
+        WIDTH => CFG_DMEM_WIDTH,
+        SIZE  => CFG_GPRF_SIZE
     )
-    PORT MAP
+    port map
     (
         dat_o   => gprf_o.dat_a_o,
         adr_i   => gprf_i.adr_a_i,
@@ -53,12 +53,12 @@ BEGIN
         clk_i   => clk_i
     );
 
-    b : dsram GENERIC MAP
+    b : dsram generic map
     (
-        WIDTH   => CFG_DMEM_WIDTH,
-        SIZE    => CFG_GPRF_SIZE
+        WIDTH => CFG_DMEM_WIDTH,
+        SIZE  => CFG_GPRF_SIZE
     )
-    PORT MAP
+    port map
     (
         dat_o   => gprf_o.dat_b_o,
         adr_i   => gprf_i.adr_b_i,
@@ -69,12 +69,12 @@ BEGIN
         clk_i   => clk_i
     );
 
-    d : dsram GENERIC MAP
+    d : dsram generic map
     (
-        WIDTH   => CFG_DMEM_WIDTH,
-        SIZE    => CFG_GPRF_SIZE
+        WIDTH => CFG_DMEM_WIDTH,
+        SIZE  => CFG_GPRF_SIZE
     )
-    PORT MAP
+    port map
     (
         dat_o   => gprf_o.dat_d_o,
         adr_i   => gprf_i.adr_d_i,
@@ -84,4 +84,4 @@ BEGIN
         wre_i   => gprf_i.wre_i,
         clk_i   => clk_i
     );
-END arch;
+end arch;

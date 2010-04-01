@@ -11,52 +11,52 @@
 --
 ----------------------------------------------------------------------------------------------
 
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-LIBRARY std;
-USE std.textio.ALL;
+library std;
+use std.textio.all;
 
-LIBRARY mblite;
-USE mblite.config_Pkg.ALL;
-USE mblite.core_Pkg.ALL;
-USE mblite.std_Pkg.ALL;
+library mblite;
+use mblite.config_Pkg.all;
+use mblite.core_Pkg.all;
+use mblite.std_Pkg.all;
 
-ENTITY testbench IS
-END testbench;
+entity testbench is
+end testbench;
 
-ARCHITECTURE arch OF testbench IS
+architecture arch of testbench is
 
-    COMPONENT mblite_soc IS PORT
+    component mblite_soc is port
     (
-        sys_clk_i : in STD_LOGIC := 'X'; 
-        dbg_dmem_o_we_o : out STD_LOGIC; 
-        dbg_dmem_o_ena_o : out STD_LOGIC; 
-        sys_rst_i : in STD_LOGIC := 'X'; 
-        sys_ena_i : in STD_LOGIC := 'X'; 
-        sys_int_i : in STD_LOGIC := 'X'; 
-        dbg_dmem_o_adr_o : out STD_LOGIC_VECTOR(31 downto 0); 
-        dbg_dmem_o_dat_o : out STD_LOGIC_VECTOR(31 downto 0); 
-        dbg_dmem_o_sel_o : out STD_LOGIC_VECTOR( 3 downto 0) 
+        sys_clk_i        : in std_logic := 'x'; 
+        dbg_dmem_o_we_o  : out std_logic; 
+        dbg_dmem_o_ena_o : out std_logic; 
+        sys_rst_i        : in std_logic := 'x'; 
+        sys_ena_i        : in std_logic := 'x'; 
+        sys_int_i        : in std_logic := 'x'; 
+        dbg_dmem_o_adr_o : out std_logic_vector(31 downto 0); 
+        dbg_dmem_o_dat_o : out std_logic_vector(31 downto 0); 
+        dbg_dmem_o_sel_o : out std_logic_vector( 3 downto 0) 
     );
-    END COMPONENT;
+    end component;
 
-    SIGNAL sys_clk_i : std_logic := '0';
-    SIGNAL sys_int_i : std_logic := '0';
-    SIGNAL sys_rst_i : std_logic := '0';
-    SIGNAL sys_ena_i : std_logic := '1';
+    signal sys_clk_i : std_logic := '0';
+    signal sys_int_i : std_logic := '0';
+    signal sys_rst_i : std_logic := '0';
+    signal sys_ena_i : std_logic := '1';
 
-    SIGNAL dmem_o : dmem_out_type;
+    signal dmem_o : dmem_out_type;
 
-    CONSTANT std_out_adr : std_logic_vector(CFG_DMEM_SIZE - 1 DOWNTO 0) := X"FFFFFFC0";
-BEGIN
+    constant std_out_adr : std_logic_vector(CFG_DMEM_SIZE - 1 downto 0) := X"FFFFFFC0";
+begin
 
-    sys_clk_i <= NOT sys_clk_i AFTER 10000 ps;
-    sys_rst_i <= '1' AFTER 0 ps, '0' AFTER  150000 ps;
-    sys_int_i <= '1' AFTER 500000000 ps, '0' after 500040000 ps;
+    sys_clk_i <= not sys_clk_i after 10000 ps;
+    sys_rst_i <= '1' after 0 ps, '0' after  150000 ps;
+    sys_int_i <= '1' after 500000000 ps, '0' after 500040000 ps;
 
-    soc : mblite_soc PORT MAP
+    soc : mblite_soc port map
     (
         sys_clk_i  => sys_clk_i,
         dbg_dmem_o_we_o => dmem_o.we_o,
@@ -69,45 +69,45 @@ BEGIN
         dbg_dmem_o_sel_o => dmem_o.sel_o
     );
 
-    timeout: PROCESS(sys_clk_i)
-    BEGIN
-        IF NOW = 10 ms THEN
-            REPORT "TIMEOUT" SEVERITY FAILURE;
-        END IF;
-    END PROCESS;
+    timeout: process(sys_clk_i)
+    begin
+        if NOW = 10 ms then
+            report "TIMEOUT" severity FAILURE;
+        end if;
+    end process;
 
     -- Character device
-    stdio: PROCESS(sys_clk_i)
-        VARIABLE s    : line;
-        VARIABLE byte : std_logic_vector(7 DOWNTO 0);
-        VARIABLE char : character;
-    BEGIN
+    stdio: process(sys_clk_i)
+        variable s    : line;
+        variable byte : std_logic_vector(7 downto 0);
+        variable char : character;
+    begin
 
-        IF rising_edge(sys_clk_i) THEN
-            IF (NOT sys_rst_i AND dmem_o.ena_o AND compare(dmem_o.adr_o, std_out_adr)) = '1' THEN
-                IF dmem_o.we_o = '1' THEN
+        if rising_edge(sys_clk_i) then
+            if (not sys_rst_i and dmem_o.ena_o and compare(dmem_o.adr_o, std_out_adr)) = '1' then
+                if dmem_o.we_o = '1' then
                 -- WRITE STDOUT
-                    CASE dmem_o.sel_o IS
-                        WHEN "0001" => byte := dmem_o.dat_o( 7 DOWNTO  0);
-                        WHEN "0010" => byte := dmem_o.dat_o(15 DOWNTO  8);
-                        WHEN "0100" => byte := dmem_o.dat_o(23 DOWNTO 16);
-                        WHEN "1000" => byte := dmem_o.dat_o(31 DOWNTO 24);
-                        WHEN OTHERS => NULL;
-                    END CASE;
+                    case dmem_o.sel_o is
+                        when "0001" => byte := dmem_o.dat_o( 7 downto  0);
+                        when "0010" => byte := dmem_o.dat_o(15 downto  8);
+                        when "0100" => byte := dmem_o.dat_o(23 downto 16);
+                        when "1000" => byte := dmem_o.dat_o(31 downto 24);
+                        when others => null;
+                    end case;
                     char := character'val(my_conv_integer(byte));
-                    IF byte = X"0D" THEN
+                    if byte = X"0D" then
                         -- Ignore character 13
-                    ELSIF byte = X"0A" THEN
+                    elsif byte = X"0A" then
                         -- Writeline on character 10 (newline)
                         writeline(output, s);
-                    ELSE
+                    else
                         -- Write to buffer
                         write(s, char);
-                    END IF;
-                END IF;
-            END IF;
-        END IF;
+                    end if;
+                end if;
+            end if;
+        end if;
 
-    END PROCESS;
+    end process;
 
-END arch;
+end arch;

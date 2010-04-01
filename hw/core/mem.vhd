@@ -20,88 +20,88 @@
 --
 ----------------------------------------------------------------------------------------------
 
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-LIBRARY mblite;
-USE mblite.config_Pkg.ALL;
-USE mblite.core_Pkg.ALL;
-USE mblite.std_Pkg.ALL;
+library mblite;
+use mblite.config_Pkg.all;
+use mblite.core_Pkg.all;
+use mblite.std_Pkg.all;
 
-ENTITY mem IS PORT
+entity mem is port
 (
-    mem_o  : OUT mem_out_type;
-    dmem_o : OUT dmem_out_type;
-    mem_i  : IN mem_in_type;
-    ena_i  : IN std_logic;
-    rst_i  : IN std_logic;
-    clk_i  : IN std_logic
+    mem_o  : out mem_out_type;
+    dmem_o : out dmem_out_type;
+    mem_i  : in mem_in_type;
+    ena_i  : in std_logic;
+    rst_i  : in std_logic;
+    clk_i  : in std_logic
 );
-END mem;
+end mem;
 
-ARCHITECTURE arch OF mem IS
-    SIGNAL r, rin : mem_out_type;
-    SIGNAL mem_result : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-BEGIN
+architecture arch of mem is
+    signal r, rin : mem_out_type;
+    signal mem_result : std_logic_vector(CFG_DMEM_WIDTH - 1 downto 0);
+begin
     -- connect pipline signals
-    mem_o.ctrl_wb     <= r.ctrl_wb;
-    mem_o.ctrl_mem_wb <= r.ctrl_mem_wb;
+    mem_o.ctrl_wrb     <= r.ctrl_wrb;
+    mem_o.ctrl_mem_wrb <= r.ctrl_mem_wrb;
     mem_o.alu_result  <= r.alu_result;
 
     -- connect memory interface signals
     dmem_o.dat_o <= mem_result;
-    dmem_o.sel_o <= decode_mem_store(mem_i.alu_result(1 DOWNTO 0), mem_i.ctrl_mem.transfer_size);
+    dmem_o.sel_o <= decode_mem_store(mem_i.alu_result(1 downto 0), mem_i.ctrl_mem.transfer_size);
     dmem_o.we_o  <= mem_i.ctrl_mem.mem_write;
-    dmem_o.adr_o <= mem_i.alu_result(CFG_DMEM_SIZE - 1 DOWNTO 0);
-    dmem_o.ena_o <= mem_i.ctrl_mem.mem_read OR mem_i.ctrl_mem.mem_write;
+    dmem_o.adr_o <= mem_i.alu_result(CFG_DMEM_SIZE - 1 downto 0);
+    dmem_o.ena_o <= mem_i.ctrl_mem.mem_read or mem_i.ctrl_mem.mem_write;
 
-    mem_comb: PROCESS(mem_i, mem_i.ctrl_wb, mem_i.ctrl_mem, r, r.ctrl_wb, r.ctrl_mem_wb)
-        VARIABLE v : mem_out_type;
-        VARIABLE intermediate : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-    BEGIN
+    mem_comb: process(mem_i, mem_i.ctrl_wrb, mem_i.ctrl_mem, r, r.ctrl_wrb, r.ctrl_mem_wrb)
+        variable v : mem_out_type;
+        variable intermediate : std_logic_vector(CFG_DMEM_WIDTH - 1 downto 0);
+    begin
 
         v := r;
-        v.ctrl_wb := mem_i.ctrl_wb;
+        v.ctrl_wrb := mem_i.ctrl_wrb;
 
-        IF mem_i.branch = '1' THEN
+        if mem_i.branch = '1' then
             -- set alu result for branch and load instructions
             v.alu_result := sign_extend(mem_i.program_counter, '0', 32);
-        ELSE
+        else
             v.alu_result := mem_i.alu_result;
-        END IF;
+        end if;
 
         -- Forward memory result
-        IF CFG_MEM_FWD_WB = true AND ( r.ctrl_mem_wb.mem_read AND compare(mem_i.ctrl_wb.reg_d, r.ctrl_wb.reg_d)) = '1' THEN
-            intermediate := align_mem_load(mem_i.mem_result, r.ctrl_mem_wb.transfer_size, r.alu_result(1 DOWNTO 0));
+        if CFG_MEM_FWD_WRB = true and ( r.ctrl_mem_wrb.mem_read and compare(mem_i.ctrl_wrb.reg_d, r.ctrl_wrb.reg_d)) = '1' then
+            intermediate := align_mem_load(mem_i.mem_result, r.ctrl_mem_wrb.transfer_size, r.alu_result(1 downto 0));
             mem_result <= align_mem_store(intermediate, mem_i.ctrl_mem.transfer_size);
-        ELSE
+        else
             mem_result <= mem_i.dat_d;
-        END IF;
+        end if;
 
-        v.ctrl_mem_wb.mem_read := mem_i.ctrl_mem.mem_read;
-        v.ctrl_mem_wb.transfer_size := mem_i.ctrl_mem.transfer_size;
+        v.ctrl_mem_wrb.mem_read := mem_i.ctrl_mem.mem_read;
+        v.ctrl_mem_wrb.transfer_size := mem_i.ctrl_mem.transfer_size;
 
         rin <= v;
 
-    END PROCESS;
+    end process;
 
-    mem_seq: PROCESS(clk_i)
-        PROCEDURE proc_mem_reset IS
-        BEGIN
-            r.alu_result  <= (OTHERS => '0');
-            r.ctrl_wb.reg_d <= (OTHERS => '0');
-            r.ctrl_wb.reg_write <= '0';
-            r.ctrl_mem_wb.mem_read <= '0';
-            r.ctrl_mem_wb.transfer_size <= WORD;
-        END PROCEDURE proc_mem_reset;
-    BEGIN
-        IF rising_edge(clk_i) THEN
-            IF rst_i = '1' THEN
+    mem_seq: process(clk_i)
+        procedure proc_mem_reset is
+        begin
+            r.alu_result  <= (others => '0');
+            r.ctrl_wrb.reg_d <= (others => '0');
+            r.ctrl_wrb.reg_write <= '0';
+            r.ctrl_mem_wrb.mem_read <= '0';
+            r.ctrl_mem_wrb.transfer_size <= WORD;
+        end procedure proc_mem_reset;
+    begin
+        if rising_edge(clk_i) then
+            if rst_i = '1' then
                 proc_mem_reset;
-            ELSIF ena_i = '1' THEN
+            elsif ena_i = '1' then
                 r <= rin;
-            END IF;
-        END IF;
-    END PROCESS;
-END arch;
+            end if;
+        end if;
+    end process;
+end arch;

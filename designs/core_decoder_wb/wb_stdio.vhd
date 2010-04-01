@@ -11,84 +11,84 @@
 --
 ----------------------------------------------------------------------------------------------
 
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-LIBRARY mblite;
-USE mblite.config_Pkg.ALL;
-USE mblite.core_Pkg.ALL;
-USE mblite.std_Pkg.ALL;
+library mblite;
+use mblite.config_Pkg.all;
+use mblite.core_Pkg.all;
+use mblite.std_Pkg.all;
 
-USE std.textio.ALL;
+use std.textio.all;
 
-ENTITY wb_stdio IS PORT
+entity wb_stdio is port
 (
-    wb_o : OUT wb_slv_out_type;
-    wb_i : IN wb_slv_in_type
+    wb_o : out wb_slv_out_type;
+    wb_i : in wb_slv_in_type
 );
-END wb_stdio;
+end wb_stdio;
 
-ARCHITECTURE arch OF wb_stdio IS
-    CONSTANT ack_assert_delay : TIME := 2 ns;
-    CONSTANT ack_deassert_delay : TIME := 2 ns;
-    SIGNAL ack : std_logic;
-    SIGNAL chr_dat : std_logic_vector(31 DOWNTO 0);
-    SIGNAL chr_cnt : natural := 0;
-BEGIN
+architecture arch of wb_stdio is
+    constant ack_assert_delay : TIME := 2 ns;
+    constant ack_deassert_delay : TIME := 2 ns;
+    signal ack : std_logic;
+    signal chr_dat : std_logic_vector(31 downto 0);
+    signal chr_cnt : natural := 0;
+begin
     wb_o.int_o <= '0';
     wb_o.dat_o <= chr_dat;
     -- Character device
-    stdio: PROCESS(wb_i.clk_i)
-        VARIABLE s    : line;
-        VARIABLE byte : std_logic_vector(7 DOWNTO 0);
-        VARIABLE char : character;
-    BEGIN
-        IF rising_edge(wb_i.clk_i) THEN
-            IF (wb_i.stb_i AND wb_i.cyc_i) = '1' THEN
-                IF wb_i.we_i = '1' AND ack = '0' THEN
+    stdio: process(wb_i.clk_i)
+        variable s    : line;
+        variable byte : std_logic_vector(7 downto 0);
+        variable char : character;
+    begin
+        if rising_edge(wb_i.clk_i) then
+            if (wb_i.stb_i and wb_i.cyc_i) = '1' then
+                if wb_i.we_i = '1' and ack = '0' then
                 -- WRITE STDOUT
-                    wb_o.ack_o <= '1' AFTER ack_assert_delay;
+                    wb_o.ack_o <= '1' after ack_assert_delay;
                     ack <= '1';
-                    CASE wb_i.sel_i IS
-                        WHEN "0001" => byte := wb_i.dat_i( 7 DOWNTO 0);
-                        WHEN "0010" => byte := wb_i.dat_i(15 DOWNTO 8);
-                        WHEN "0100" => byte := wb_i.dat_i(23 DOWNTO 16);
-                        WHEN "1000" => byte := wb_i.dat_i(31 DOWNTO 24);
-                        WHEN OTHERS => NULL;
-                    END CASE;
+                    case wb_i.sel_i is
+                        when "0001" => byte := wb_i.dat_i( 7 downto 0);
+                        when "0010" => byte := wb_i.dat_i(15 downto 8);
+                        when "0100" => byte := wb_i.dat_i(23 downto 16);
+                        when "1000" => byte := wb_i.dat_i(31 downto 24);
+                        when others => null;
+                    end case;
                     char := character'val(my_conv_integer(byte));
-                    IF byte = X"0D" THEN
+                    if byte = X"0D" then
                         -- Ignore character 13
-                    ELSIF byte = X"0A" THEN
+                    elsif byte = X"0A" then
                         -- Writeline on character 10 (newline)
                         writeline(output, s);
-                    ELSE
+                    else
                         -- Write to buffer
                         write(s, char);
-                    END IF;
-                ELSIF ack = '0' THEN
+                    end if;
+                elsif ack = '0' then
                 -- READ stdout
                     ack <= '1';
-                    wb_o.ack_o <= '1' AFTER ack_assert_delay;
-                    IF chr_cnt = 0 THEN
+                    wb_o.ack_o <= '1' after ack_assert_delay;
+                    if chr_cnt = 0 then
                         chr_cnt <= 1;
                         chr_dat <= X"4C4C4C4C";
-                    ELSIF chr_cnt = 1 THEN
+                    elsif chr_cnt = 1 then
                         chr_cnt <= 2;
                         chr_dat <= X"4D4D4D4D";
-                    ELSIF chr_cnt = 2 THEN
+                    elsif chr_cnt = 2 then
                         chr_cnt <= 3;
                         chr_dat <= X"4E4E4E4E";
-                    ELSIF chr_cnt = 3 THEN
+                    elsif chr_cnt = 3 then
                         chr_cnt <= 0;
                         chr_dat <= X"0A0A0A0A";
-                    END IF;
-                END IF;
-            ELSE
+                    end if;
+                end if;
+            else
                 ack <= '0';
-                wb_o.ack_o <= '0' AFTER ack_deassert_delay;
-            END IF;
-        END IF;
-    END PROCESS;
-END arch;
+                wb_o.ack_o <= '0' after ack_deassert_delay;
+            end if;
+        end if;
+    end process;
+end arch;

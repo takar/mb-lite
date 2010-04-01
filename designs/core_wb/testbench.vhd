@@ -12,151 +12,151 @@
 --
 ----------------------------------------------------------------------------------------------
 
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-LIBRARY mblite;
-USE mblite.config_Pkg.ALL;
-USE mblite.core_Pkg.ALL;
-USE mblite.std_Pkg.ALL;
+library mblite;
+use mblite.config_Pkg.all;
+use mblite.core_Pkg.all;
+use mblite.std_Pkg.all;
 
 use std.textio.all;
 
-ENTITY testbench IS
-END testbench;
+entity testbench is
+end testbench;
 
-ARCHITECTURE arch OF testbench IS
+architecture arch of testbench is
 
-    SIGNAL imem_o : imem_out_type;
-    SIGNAL imem_i : imem_in_type;
+    signal imem_o : imem_out_type;
+    signal imem_i : imem_in_type;
 
-    SIGNAL wb_o : wb_mst_out_type;
-    SIGNAL wb_i : wb_mst_in_type;
+    signal wb_o : wb_mst_out_type;
+    signal wb_i : wb_mst_in_type;
 
-    SIGNAL sys_clk_i : std_logic := '0';
-    SIGNAL sys_int_i : std_logic;
-    SIGNAL sys_rst_i : std_logic;
+    signal sys_clk_i : std_logic := '0';
+    signal sys_int_i : std_logic;
+    signal sys_rst_i : std_logic;
 
-    CONSTANT std_out_adr : std_logic_vector(CFG_DMEM_SIZE - 1 DOWNTO 0) := X"FFFFFFC0";
-    SIGNAL std_out_ack : std_logic;
+    constant std_out_adr : std_logic_vector(CFG_DMEM_SIZE - 1 downto 0) := X"FFFFFFC0";
+    signal std_out_ack : std_logic;
 
-    SIGNAL stdo_ena : std_logic;
+    signal stdo_ena : std_logic;
 
-    SIGNAL dmem_ena : std_logic;
-    SIGNAL dmem_dat : std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-    SIGNAL dmem_sel : std_logic_vector(3 DOWNTO 0);
+    signal dmem_ena : std_logic;
+    signal dmem_dat : std_logic_vector(CFG_DMEM_WIDTH - 1 downto 0);
+    signal dmem_sel : std_logic_vector(3 downto 0);
 
-    CONSTANT rom_size : integer := 16;
-    CONSTANT ram_size : integer := 16;
+    constant rom_size : integer := 16;
+    constant ram_size : integer := 16;
 
-BEGIN
+begin
 
-    sys_clk_i <= NOT sys_clk_i AFTER 10000 ps;
-    sys_rst_i <= '1' AFTER 0 ps, '0' AFTER  150000 ps;
-    sys_int_i <= '1' AFTER 500000000 ps, '0' after 500040000 ps;
+    sys_clk_i <= not sys_clk_i after 10000 ps;
+    sys_rst_i <= '1' after 0 ps, '0' after  150000 ps;
+    sys_int_i <= '1' after 500000000 ps, '0' after 500040000 ps;
 
-    timeout: PROCESS(sys_clk_i)
-    BEGIN
-        IF NOW = 10 ms THEN
-            report "TIMEOUT" SEVERITY FAILURE;
-        END IF;
+    timeout: process(sys_clk_i)
+    begin
+        if NOW = 10 ms then
+            report "TIMEOUT" severity FAILURE;
+        end if;
 
         -- BREAK ON EXIT (0xB8000000)
-        IF compare(imem_i.dat_i, "10111000000000000000000000000000") = '1' THEN
+        if compare(imem_i.dat_i, "10111000000000000000000000000000") = '1' then
             -- Make sure the simulator finishes when an error is encountered.
             -- For modelsim: see menu Simulate -> Runtime options -> Assertions
-            REPORT "FINISHED" SEVERITY FAILURE;
-        END IF;
-    END PROCESS;
+            report "FINISHED" severity FAILURE;
+        end if;
+    end process;
 
     -- Character device
-    wb_stdio_slave: PROCESS(sys_clk_i)
-        VARIABLE s    : line;
-        VARIABLE byte : std_logic_vector(7 DOWNTO 0);
-        VARIABLE char : character;
-    BEGIN
-        IF rising_edge(sys_clk_i) THEN
-            IF (wb_o.stb_o AND wb_o.cyc_o AND compare(wb_o.adr_o, std_out_adr)) = '1' THEN
-                IF wb_o.we_o = '1' AND std_out_ack = '0' THEN
+    wb_stdio_slave: process(sys_clk_i)
+        variable s    : line;
+        variable byte : std_logic_vector(7 downto 0);
+        variable char : character;
+    begin
+        if rising_edge(sys_clk_i) then
+            if (wb_o.stb_o and wb_o.cyc_o and compare(wb_o.adr_o, std_out_adr)) = '1' then
+                if wb_o.we_o = '1' and std_out_ack = '0' then
                 -- WRITE STDOUT
                     std_out_ack <= '1';
-                    CASE wb_o.sel_o IS
-                        WHEN "0001" => byte := wb_o.dat_o( 7 DOWNTO  0);
-                        WHEN "0010" => byte := wb_o.dat_o(15 DOWNTO  8);
-                        WHEN "0100" => byte := wb_o.dat_o(23 DOWNTO 16);
-                        WHEN "1000" => byte := wb_o.dat_o(31 DOWNTO 24);
-                        WHEN OTHERS => NULL;
-                    END CASE;
+                    case wb_o.sel_o is
+                        when "0001" => byte := wb_o.dat_o( 7 downto  0);
+                        when "0010" => byte := wb_o.dat_o(15 downto  8);
+                        when "0100" => byte := wb_o.dat_o(23 downto 16);
+                        when "1000" => byte := wb_o.dat_o(31 downto 24);
+                        when others => null;
+                    end case;
                     char := character'val(my_conv_integer(byte));
-                    IF byte = X"0D" THEN
+                    if byte = X"0D" then
                         -- Ignore character 13
-                    ELSIF byte = X"0A" THEN
+                    elsif byte = X"0A" then
                         -- Writeline on character 10 (newline)
                         writeline(output, s);
-                    ELSE
+                    else
                         -- Write to buffer
                         write(s, char);
-                    END IF;
-                ELSIF std_out_ack = '0' THEN
+                    end if;
+                elsif std_out_ack = '0' then
                     std_out_ack <= '1';
-                END IF;
-            ELSE
+                end if;
+            else
                 std_out_ack <= '0';
-            END IF;
-        END IF;
+            end if;
+        end if;
 
-    END PROCESS;
+    end process;
 
     wb_i.clk_i <= sys_clk_i;
     wb_i.rst_i <= sys_rst_i;
     wb_i.int_i <= sys_int_i;
 
-    dmem_ena <= wb_o.stb_o AND wb_o.cyc_o AND NOT compare(wb_o.adr_o, std_out_adr);
+    dmem_ena <= wb_o.stb_o and wb_o.cyc_o and not compare(wb_o.adr_o, std_out_adr);
 
-    PROCESS(wb_o.stb_o, wb_o.cyc_o, std_out_ack, wb_o.adr_o)
-    BEGIN
-        IF NOT compare(wb_o.adr_o, std_out_adr) = '1' THEN
-            wb_i.ack_i <= wb_o.stb_o AND wb_o.cyc_o AFTER 2 ns;
-        ELSE
-            wb_i.ack_i <= std_out_ack AFTER 22 ns;
-        END IF;
-    END PROCESS;
+    process(wb_o.stb_o, wb_o.cyc_o, std_out_ack, wb_o.adr_o)
+    begin
+        if not compare(wb_o.adr_o, std_out_adr) = '1' then
+            wb_i.ack_i <= wb_o.stb_o and wb_o.cyc_o after 2 ns;
+        else
+            wb_i.ack_i <= std_out_ack after 22 ns;
+        end if;
+    end process;
 
-    imem : sram GENERIC MAP
+    imem : sram generic map
     (
         WIDTH => CFG_IMEM_WIDTH,
         SIZE => rom_size - 2
     )
-    PORT MAP
+    port map
     (
         dat_o => imem_i.dat_i,
         dat_i => "00000000000000000000000000000000",
-        adr_i => imem_o.adr_o(rom_size - 1 DOWNTO 2),
+        adr_i => imem_o.adr_o(rom_size - 1 downto 2),
         wre_i => '0',
         ena_i => imem_o.ena_o,
         clk_i => sys_clk_i
     );
 
-    dmem_sel <= wb_o.sel_o WHEN wb_o.we_o = '1' ELSE (OTHERS => '0');
-    wb_i.dat_i <= X"61616161" WHEN std_out_ack = '1' ELSE dmem_dat;
+    dmem_sel <= wb_o.sel_o when wb_o.we_o = '1' else (others => '0');
+    wb_i.dat_i <= X"61616161" when std_out_ack = '1' else dmem_dat;
 
-    dmem : sram_4en GENERIC MAP
+    dmem : sram_4en generic map
     (
         WIDTH => CFG_DMEM_WIDTH,
         SIZE => ram_size - 2
     )
-    PORT MAP
+    port map
     (
         dat_o => dmem_dat,
         dat_i => wb_o.dat_o,
-        adr_i => wb_o.adr_o(ram_size - 1 DOWNTO 2),
+        adr_i => wb_o.adr_o(ram_size - 1 downto 2),
         wre_i => dmem_sel,
         ena_i => dmem_ena,
         clk_i => sys_clk_i
     );
 
-    core_wb0 : core_wb PORT MAP
+    core_wb0 : core_wb port map
     (
         imem_o => imem_o,
         wb_o   => wb_o,
@@ -164,4 +164,4 @@ BEGIN
         wb_i   => wb_i
     );
 
-END arch;
+end arch;

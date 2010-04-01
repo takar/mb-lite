@@ -12,37 +12,37 @@
 --
 ----------------------------------------------------------------------------------------------
 
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-LIBRARY mblite;
-USE mblite.config_Pkg.ALL;
-USE mblite.core_Pkg.ALL;
-USE mblite.std_Pkg.ALL;
+library mblite;
+use mblite.config_Pkg.all;
+use mblite.core_Pkg.all;
+use mblite.std_Pkg.all;
 
-ENTITY core_wb IS GENERIC
+entity core_wb is generic
 (
     G_INTERRUPT  : boolean := CFG_INTERRUPT;
     G_USE_HW_MUL : boolean := CFG_USE_HW_MUL;
     G_USE_BARREL : boolean := CFG_USE_BARREL;
     G_DEBUG      : boolean := CFG_DEBUG
 );
-PORT
+port
 (
-    imem_o : OUT imem_out_type;
-    wb_o   : OUT wb_mst_out_type;
-    imem_i : IN imem_in_type;
-    wb_i   : IN wb_mst_in_type
+    imem_o : out imem_out_type;
+    wb_o   : out wb_mst_out_type;
+    imem_i : in imem_in_type;
+    wb_i   : in wb_mst_in_type
 );
-END core_wb;
+end core_wb;
 
-ARCHITECTURE arch OF core_wb IS
-    SIGNAL dmem_i : dmem_in_type;
-    SIGNAL dmem_o : dmem_out_type;
-BEGIN
+architecture arch of core_wb is
+    signal dmem_i : dmem_in_type;
+    signal dmem_o : dmem_out_type;
+begin
 
-    wb_adapter0 : core_wb_adapter PORT MAP
+    wb_adapter0 : core_wb_adapter port map
     (
         dmem_i => dmem_i,
         wb_o   => wb_o,
@@ -50,14 +50,14 @@ BEGIN
         wb_i   => wb_i
     );
 
-    core0 : core GENERIC MAP
+    core0 : core generic map
     (
         G_INTERRUPT  => G_INTERRUPT,
         G_USE_HW_MUL => G_USE_HW_MUL,
         G_USE_BARREL => G_USE_BARREL,
         G_DEBUG      => G_DEBUG
     )
-    PORT MAP
+    port map
     (
         imem_o => imem_o,
         dmem_o => dmem_o,
@@ -68,4 +68,4 @@ BEGIN
         clk_i  => wb_i.clk_i
     );
 
-END arch;
+end arch;

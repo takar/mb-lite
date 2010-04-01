@@ -11,32 +11,32 @@
 --
 ----------------------------------------------------------------------------------------------
 
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-LIBRARY mblite;
-USE mblite.std_Pkg.ALL;
+library mblite;
+use mblite.std_Pkg.all;
 
-ENTITY sram_init IS GENERIC
+entity sram_init is generic
 (
     WIDTH : integer := 32;
     SIZE  : integer := 11
 );
-PORT
+port
 (
-    dat_o                   : OUT std_logic_vector(WIDTH - 1 DOWNTO 0);
-    dat_i                   : IN std_logic_vector(WIDTH - 1 DOWNTO 0);
-    adr_i                   : IN std_logic_vector(SIZE - 1 DOWNTO 0);
-    wre_i                   : IN std_logic;
-    ena_i                   : IN std_logic;
-    clk_i                   : IN std_logic
+    dat_o : out std_logic_vector(WIDTH - 1 downto 0);
+    dat_i : in std_logic_vector(WIDTH - 1 downto 0);
+    adr_i : in std_logic_vector(SIZE - 1 downto 0);
+    wre_i : in std_logic;
+    ena_i : in std_logic;
+    clk_i : in std_logic
 );
-END sram_init;
+end sram_init;
 
-ARCHITECTURE arch OF sram_init IS
-  TYPE ram_type IS array (0 TO 2 ** SIZE - 1) OF std_logic_vector(WIDTH - 1 DOWNTO 0);
-  SIGNAL ram : ram_type := (
+architecture arch of sram_init is
+  type ram_type is array (0 to 2 ** SIZE - 1) of std_logic_vector(WIDTH - 1 downto 0);
+  signal ram : ram_type := (
     X"B8080050",X"00000000",X"B8080728",X"00000000",X"B8080738",X"00000000",X"00000000",X"00000000",
     X"B8080730",X"00000000",X"00000000",X"00000000",X"00000000",X"00000000",X"00000000",X"00000000",
     X"00000000",X"00000000",X"00000000",X"00000000",X"31A01028",X"30400F18",X"B0000000",X"30209038",
@@ -294,16 +294,16 @@ ARCHITECTURE arch OF sram_init IS
     X"00000000",X"00000000",X"00000000",X"00000000",X"00000000",X"00000000",X"00000000",X"00000000",
     X"00000000",X"00000000",X"00000000",X"00000000",X"00000000",X"00000000",X"00000000",X"00000000");
 
-BEGIN
-    PROCESS(clk_i)
-    BEGIN
-        IF rising_edge(clk_i) THEN
-            IF notx(adr_i) AND ena_i = '1' THEN
-                IF wre_i = '1' THEN
+begin
+    process(clk_i)
+    begin
+        if rising_edge(clk_i) then
+            if notx(adr_i) and ena_i = '1' then
+                if wre_i = '1' then
                     ram(my_conv_integer(adr_i)) <= dat_i;
-                END IF;
+                end if;
                 dat_o <= ram(my_conv_integer(adr_i));
-            END IF;
-        END IF;
-    END PROCESS;
-END arch;
+            end if;
+        end if;
+    end process;
+end arch;

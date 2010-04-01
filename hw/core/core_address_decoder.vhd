@@ -11,86 +11,87 @@
 --
 ----------------------------------------------------------------------------------------------
 
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-LIBRARY mblite;
-USE mblite.config_Pkg.ALL;
-USE mblite.core_Pkg.ALL;
-USE mblite.std_Pkg.ALL;
+library mblite;
+use mblite.config_Pkg.all;
+use mblite.core_Pkg.all;
+use mblite.std_Pkg.all;
 
-ENTITY core_address_decoder IS GENERIC
+entity core_address_decoder is generic
 (
     G_NUM_SLAVES : positive := CFG_NUM_SLAVES;
     G_MEMORY_MAP : memory_map_type := CFG_MEMORY_MAP
 );
-PORT
+port
 (
-    m_dmem_i : OUT dmem_in_type;
-    s_dmem_o : OUT dmem_out_array_type(G_NUM_SLAVES - 1 DOWNTO 0);
-    m_dmem_o : IN dmem_out_type;
-    s_dmem_i : IN dmem_in_array_type(G_NUM_SLAVES - 1 DOWNTO 0);
+    m_dmem_i : out dmem_in_type;
+    s_dmem_o : out dmem_out_array_type(G_NUM_SLAVES - 1 downto 0);
+    m_dmem_o : in dmem_out_type;
+    s_dmem_i : in dmem_in_array_type(G_NUM_SLAVES - 1 downto 0);
     clk_i : std_logic
 );
-END core_address_decoder;
+end core_address_decoder;
 
-ARCHITECTURE arch OF core_address_decoder IS
+architecture arch of core_address_decoder is
 
     -- Decodes the address based on the memory map. Returns "1" if 0 or 1 slave is attached.
-    FUNCTION decode(adr : std_logic_vector) RETURN std_logic_vector IS
-        VARIABLE result : std_logic_vector(G_NUM_SLAVES - 1 DOWNTO 0);
-    BEGIN
-        result := (OTHERS => '1');
-        IF G_NUM_SLAVES > 1 AND notx(adr) THEN
-            FOR i IN G_NUM_SLAVES - 1 DOWNTO 0 LOOP
-                IF (adr >= G_MEMORY_MAP(i) AND adr < G_MEMORY_MAP(i+1)) THEN
+    function decode(adr : std_logic_vector) return std_logic_vector is
+        variable result : std_logic_vector(G_NUM_SLAVES - 1 downto 0);
+    begin
+        if G_NUM_SLAVES > 1 and notx(adr) then
+            for i in G_NUM_SLAVES - 1 downto 0 loop
+                if (adr >= G_MEMORY_MAP(i) and adr < G_MEMORY_MAP(i+1)) then
                     result(i) := '1';
-                ELSE
+                else
                     result(i) := '0';
-                END IF;
-            END LOOP;
-        END IF;
-        RETURN result;
-    END FUNCTION;
+                end if;
+            end loop;
+        else
+            result := (others => '1');
+        end if;
+        return result;
+    end function;
 
-    FUNCTION demux(dmem_i : dmem_in_array_type; ce, r_ce : std_logic_vector) RETURN dmem_in_type IS
-        VARIABLE dmem : dmem_in_type;
-    BEGIN
+    function demux(dmem_i : dmem_in_array_type; ce, r_ce : std_logic_vector) return dmem_in_type is
+        variable dmem : dmem_in_type;
+    begin
         dmem := dmem_i(0);
-        IF notx(ce) THEN
-            FOR i IN G_NUM_SLAVES - 1 DOWNTO 0 LOOP
-                IF ce(i) = '1' THEN
+        if notx(ce) then
+            for i in G_NUM_SLAVES - 1 downto 0 loop
+                if ce(i) = '1' then
                     dmem.ena_i := dmem_i(i).ena_i;
-                END IF;
-                IF r_ce(i) = '1' THEN
+                end if;
+                if r_ce(i) = '1' then
                     dmem.dat_i := dmem_i(i).dat_i;
-                END IF;
-            END LOOP;
-        END IF;
-        RETURN dmem;
-    END FUNCTION;
+                end if;
+            end loop;
+        end if;
+        return dmem;
+    end function;
 
-    SIGNAL r_ce, ce : std_logic_vector(G_NUM_SLAVES - 1 DOWNTO 0) := (OTHERS => '1');
+    signal r_ce, ce : std_logic_vector(G_NUM_SLAVES - 1 downto 0) := (others => '1');
 
-BEGIN
+begin
 
     ce <= decode(m_dmem_o.adr_o);
     m_dmem_i <= demux(s_dmem_i, ce, r_ce);
 
-    CON: FOR i IN G_NUM_SLAVES-1 DOWNTO 0 GENERATE
-    BEGIN
+    CON: for i in G_NUM_SLAVES-1 downto 0 generate
+    begin
         s_dmem_o(i).dat_o <= m_dmem_o.dat_o;
         s_dmem_o(i).adr_o <= m_dmem_o.adr_o;
         s_dmem_o(i).sel_o <= m_dmem_o.sel_o;
-        s_dmem_o(i).we_o  <= m_dmem_o.we_o AND ce(i);
-        s_dmem_o(i).ena_o <= m_dmem_o.ena_o AND ce(i);
-    END GENERATE;
+        s_dmem_o(i).we_o  <= m_dmem_o.we_o and ce(i);
+        s_dmem_o(i).ena_o <= m_dmem_o.ena_o and ce(i);
+    end generate;
 
-    PROCESS(clk_i)
-    BEGIN
-        IF rising_edge(clk_i) THEN
+    process(clk_i)
+    begin
+        if rising_edge(clk_i) then
             r_ce <= ce;
-        END IF;
-    END PROCESS;
-END arch;
+        end if;
+    end process;
+end arch;

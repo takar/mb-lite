@@ -12,157 +12,157 @@
 --
 ----------------------------------------------------------------------------------------------
 
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-LIBRARY std;
-USE std.textio.ALL;
+library std;
+use std.textio.all;
 
-LIBRARY mblite;
-USE mblite.config_Pkg.ALL;
-USE mblite.core_Pkg.ALL;
-USE mblite.std_Pkg.ALL;
+library mblite;
+use mblite.config_Pkg.all;
+use mblite.core_Pkg.all;
+use mblite.std_Pkg.all;
 
-ENTITY testbench IS
-END testbench;
+entity testbench is
+end testbench;
 
-ARCHITECTURE arch OF testbench IS
+architecture arch of testbench is
 
-    SIGNAL dmem_o : dmem_out_type;
-    SIGNAL imem_o : imem_out_type;
-    SIGNAL dmem_i : dmem_in_type;
-    SIGNAL imem_i : imem_in_type;
+    signal dmem_o : dmem_out_type;
+    signal imem_o : imem_out_type;
+    signal dmem_i : dmem_in_type;
+    signal imem_i : imem_in_type;
 
-    SIGNAL sys_clk_i : std_logic := '0';
-    SIGNAL sys_int_i : std_logic := '0';
-    SIGNAL sys_rst_i : std_logic := '0';
-    SIGNAL sys_ena_i : std_logic := '1';
+    signal sys_clk_i : std_logic := '0';
+    signal sys_int_i : std_logic := '0';
+    signal sys_rst_i : std_logic := '0';
+    signal sys_ena_i : std_logic := '1';
 
-    CONSTANT std_out_adr : std_logic_vector(CFG_DMEM_SIZE - 1 DOWNTO 0) := X"FFFFFFC0";
-    CONSTANT rom_size : integer := 16;
-    CONSTANT ram_size : integer := 16;
+    constant std_out_adr : std_logic_vector(CFG_DMEM_SIZE - 1 downto 0) := X"FFFFFFC0";
+    constant rom_size    : integer := 16;
+    constant ram_size    : integer := 16;
 
-    SIGNAL mem_enable : std_logic;
-    SIGNAL chr_enable : std_logic;
-    SIGNAL chr_read : std_logic;
-    SIGNAL sel_o : std_logic_vector(3 DOWNTO 0);
-    SIGNAL mem_dat : std_logic_vector(31 DOWNTO 0);
-    SIGNAL chr_dat : std_logic_vector(31 DOWNTO 0);
-    SIGNAL chr_cnt : integer := 0;
+    signal mem_enable : std_logic;
+    signal chr_enable : std_logic;
+    signal chr_read   : std_logic;
+    signal sel_o      : std_logic_vector(3 downto 0);
+    signal mem_dat    : std_logic_vector(31 downto 0);
+    signal chr_dat    : std_logic_vector(31 downto 0);
+    signal chr_cnt    : integer := 0;
 
 BEGIN
 
-    sys_clk_i <= NOT sys_clk_i AFTER 10000 ps;
-    sys_rst_i <= '1' AFTER 0 ps, '0' AFTER  150000 ps;
-    sys_int_i <= '1' AFTER 500000000 ps, '0' after 500040000 ps;
+    sys_clk_i <= not sys_clk_i after 10000 ps;
+    sys_rst_i <= '1' after 0 ps, '0' after  150000 ps;
+    sys_int_i <= '1' after 500000000 ps, '0' after 500040000 ps;
 
 
     dmem_i.ena_i <= sys_ena_i;
-    sel_o <= dmem_o.sel_o WHEN dmem_o.we_o = '1' ELSE (OTHERS => '0');
+    sel_o <= dmem_o.sel_o when dmem_o.we_o = '1' else (others => '0');
 
-    mem_enable <= NOT sys_rst_i AND dmem_o.ena_o AND NOT compare(dmem_o.adr_o, std_out_adr);
-    chr_enable <= NOT sys_rst_i AND dmem_o.ena_o AND compare(dmem_o.adr_o, std_out_adr);
+    mem_enable <= not sys_rst_i and dmem_o.ena_o and not compare(dmem_o.adr_o, std_out_adr);
+    chr_enable <= not sys_rst_i and dmem_o.ena_o and compare(dmem_o.adr_o, std_out_adr);
 
-    dmem_i.dat_i <= chr_dat WHEN chr_read = '1' ELSE mem_dat;
+    dmem_i.dat_i <= chr_dat when chr_read = '1' else mem_dat;
 
     -- Character device
-    stdio: PROCESS(sys_clk_i)
-        VARIABLE s    : line;
-        VARIABLE byte : std_logic_vector(7 DOWNTO 0);
-        VARIABLE char : character;
-    BEGIN
-        IF rising_edge(sys_clk_i) THEN
-            IF chr_enable = '1' THEN
-                IF dmem_o.we_o = '1' THEN
+    stdio: process(sys_clk_i)
+        variable s    : line;
+        variable byte : std_logic_vector(7 downto 0);
+        variable char : character;
+    begin
+        if rising_edge(sys_clk_i) then
+            if chr_enable = '1' then
+                if dmem_o.we_o = '1' then
                 -- WRITE STDOUT
-                    CASE dmem_o.sel_o IS
-                        WHEN "0001" => byte := dmem_o.dat_o( 7 DOWNTO  0);
-                        WHEN "0010" => byte := dmem_o.dat_o(15 DOWNTO  8);
-                        WHEN "0100" => byte := dmem_o.dat_o(23 DOWNTO 16);
-                        WHEN "1000" => byte := dmem_o.dat_o(31 DOWNTO 24);
-                        WHEN OTHERS => NULL;
-                    END CASE;
+                    case dmem_o.sel_o is
+                        when "0001" => byte := dmem_o.dat_o( 7 downto  0);
+                        when "0010" => byte := dmem_o.dat_o(15 downto  8);
+                        when "0100" => byte := dmem_o.dat_o(23 downto 16);
+                        when "1000" => byte := dmem_o.dat_o(31 downto 24);
+                        when others => null;
+                    end case;
                     char := character'val(my_conv_integer(byte));
-                    IF byte = X"0D" THEN
+                    if byte = X"0D" then
                         -- Ignore character 13
-                    ELSIF byte = X"0A" THEN
+                    elsif byte = X"0A" then
                         -- Writeline on character 10 (newline)
                         writeline(output, s);
-                    ELSE
+                    else
                         -- Write to buffer
                         write(s, char);
-                    END IF;
+                    end if;
                     chr_read <= '0';
-                ELSE
+                else
                     chr_read <= '1';
-                    IF chr_cnt = 0 THEN
+                    if chr_cnt = 0 then
                         chr_cnt <= 1;
                         chr_dat <= X"4C4C4C4C";
-                    ELSIF chr_cnt = 1 THEN
+                    elsif chr_cnt = 1 then
                         chr_cnt <= 2;
                         chr_dat <= X"4D4D4D4D";
-                    ELSIF chr_cnt = 2 THEN
+                    elsif chr_cnt = 2 then
                         chr_cnt <= 3;
                         chr_dat <= X"4E4E4E4E";
-                    ELSIF chr_cnt = 3 THEN
+                    elsif chr_cnt = 3 then
                         chr_cnt <= 0;
                         chr_dat <= X"0A0A0A0A";
-                    END IF;
-                END IF;
-            ELSE
+                    end if;
+                end if;
+            else
                 chr_read <= '0';
-            END IF;
-        END IF;
+            end if;
+        end if;
 
-    END PROCESS;
+    end process;
 
     -- Warning: an infinite loop like while(1) {} triggers this timeout too!
     -- disable this feature when a premature finish occur.
-    timeout: PROCESS(sys_clk_i)
-    BEGIN
-        IF NOW = 10 ms THEN
-            REPORT "TIMEOUT" SEVERITY FAILURE;
-        END IF;
+    timeout: process(sys_clk_i)
+    begin
+        if now = 10 ms then
+            report "TIMEOUT" severity FAILURE;
+        end if;
         -- BREAK ON EXIT (0xB8000000)
-        IF compare(imem_i.dat_i, "10111000000000000000000000000000") = '1' THEN
+        if compare(imem_i.dat_i, "10111000000000000000000000000000") = '1' then
             -- Make sure the simulator finishes when an error is encountered.
             -- For modelsim: see menu Simulate -> Runtime options -> Assertions
-            REPORT "FINISHED" SEVERITY FAILURE;
-        END IF;
-    END PROCESS;
+            report "FINISHED" severity FAILURE;
+        end if;
+    end process;
 
-    imem : sram GENERIC MAP
+    imem : sram generic map
     (
         WIDTH => CFG_IMEM_WIDTH,
         SIZE => rom_size - 2
     )
-    PORT MAP
+    port map
     (
         dat_o => imem_i.dat_i,
         dat_i => "00000000000000000000000000000000",
-        adr_i => imem_o.adr_o(rom_size - 1 DOWNTO 2),
+        adr_i => imem_o.adr_o(rom_size - 1 downto 2),
         wre_i => '0',
         ena_i => imem_o.ena_o,
         clk_i => sys_clk_i
     );
 
-    dmem : sram_4en GENERIC MAP
+    dmem : sram_4en generic map
     (
         WIDTH => CFG_DMEM_WIDTH,
         SIZE => ram_size - 2
     )
-    PORT MAP
+    port map
     (
         dat_o => mem_dat,
         dat_i => dmem_o.dat_o,
-        adr_i => dmem_o.adr_o(ram_size - 1 DOWNTO 2),
+        adr_i => dmem_o.adr_o(ram_size - 1 downto 2),
         wre_i => sel_o,
         ena_i => mem_enable,
         clk_i => sys_clk_i
     );
 
-    core0 : core PORT MAP
+    core0 : core port map
     (
         imem_o => imem_o,
         dmem_o => dmem_o,
@@ -173,17 +173,17 @@ BEGIN
         clk_i  => sys_clk_i
     );
 
-END arch;
+end arch;
 
 ----------------------------------------------------------------------------------------------
 -- USE CONFIGURATIONS INSTEAD OF GENERICS TO IMPLEMENT - FOR EXAMPLE - DIFFERENT MEMORIES.
 -- CONFIGURATIONS CAN HIERARCHICALLY INVOKE OTHER CONFIGURATIONS TO REDUCE THE SIZE OF THE
 -- CONFIGURATION DECLARATION
 ----------------------------------------------------------------------------------------------
-CONFIGURATION tb_conf_example OF testbench IS
-    FOR arch
-        FOR ALL: sram_4en
-            USE ENTITY mblite.sram_4en(arch);
-        END FOR;
-    END FOR;
-END tb_conf_example;
+configuration tb_conf_example of testbench is
+    for arch
+        for all: sram_4en
+            use entity mblite.sram_4en(arch);
+        end for;
+    end for;
+end tb_conf_example;

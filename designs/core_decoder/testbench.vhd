@@ -12,67 +12,67 @@
 --
 ----------------------------------------------------------------------------------------------
 
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-LIBRARY mblite;
-USE mblite.config_Pkg.ALL;
-USE mblite.core_Pkg.ALL;
-USE mblite.std_Pkg.ALL;
+library mblite;
+use mblite.config_Pkg.all;
+use mblite.core_Pkg.all;
+use mblite.std_Pkg.all;
 
-ENTITY testbench IS
-END testbench;
+entity testbench is
+end testbench;
 
-ARCHITECTURE arch OF testbench IS
+architecture arch of testbench is
 
-    COMPONENT mblite_stdio IS PORT
+    component mblite_stdio is port
     (
-        dmem_i : OUT dmem_in_type;
-        dmem_o : IN dmem_out_type;
-        clk_i  : IN std_logic
+        dmem_i : out dmem_in_type;
+        dmem_o : in dmem_out_type;
+        clk_i  : in std_logic
     );
-    END COMPONENT;
+    end component;
 
-    SIGNAL dmem_o : dmem_out_type;
-    SIGNAL dmem_i : dmem_in_type;
-    SIGNAL imem_o : imem_out_type;
-    SIGNAL imem_i : imem_in_type;
-    SIGNAL s_dmem_o : dmem_out_array_type(CFG_NUM_SLAVES - 1 DOWNTO 0);
-    SIGNAL s_dmem_i : dmem_in_array_type(CFG_NUM_SLAVES - 1 DOWNTO 0);
+    signal dmem_o : dmem_out_type;
+    signal dmem_i : dmem_in_type;
+    signal imem_o : imem_out_type;
+    signal imem_i : imem_in_type;
+    signal s_dmem_o : dmem_out_array_type(CFG_NUM_SLAVES - 1 downto 0);
+    signal s_dmem_i : dmem_in_array_type(CFG_NUM_SLAVES - 1 downto 0);
 
-    SIGNAL sys_clk_i : std_logic := '0';
-    SIGNAL sys_int_i : std_logic;
-    SIGNAL sys_rst_i : std_logic;
+    signal sys_clk_i : std_logic := '0';
+    signal sys_int_i : std_logic;
+    signal sys_rst_i : std_logic;
 
-    CONSTANT rom_size : integer := 16;
-    CONSTANT ram_size : integer := 16;
+    constant rom_size : integer := 16;
+    constant ram_size : integer := 16;
 
-    SIGNAL sel_o : std_logic_vector(3 DOWNTO 0);
-    SIGNAL ena_o : std_logic;
+    signal sel_o : std_logic_vector(3 downto 0);
+    signal ena_o : std_logic;
 
 BEGIN
 
-    sys_clk_i <= NOT sys_clk_i AFTER 10000 ps;
-    sys_rst_i <= '1' AFTER 0 ps, '0' AFTER  150000 ps;
-    sys_int_i <= '1' AFTER 500000000 ps, '0' after 500040000 ps;
+    sys_clk_i <= not sys_clk_i after 10000 ps;
+    sys_rst_i <= '1' after 0 ps, '0' after  150000 ps;
+    sys_int_i <= '1' after 500000000 ps, '0' after 500040000 ps;
 
     -- Warning: an infinite loop like while(1) {} triggers this timeout too!
     -- disable this feature when a premature finish occur.
-    timeout: PROCESS(sys_clk_i)
-    BEGIN
-        IF NOW = 10 ms THEN
-            REPORT "TIMEOUT" SEVERITY FAILURE;
-        END IF;
+    timeout: process(sys_clk_i)
+    begin
+        if NOW = 10 ms then
+            report "TIMEOUT" severity FAILURE;
+        end if;
         -- BREAK ON EXIT (0xB8000000)
-        IF compare(imem_i.dat_i, "10111000000000000000000000000000") = '1' THEN
+        if compare(imem_i.dat_i, "10111000000000000000000000000000") = '1' then
             -- Make sure the simulator finishes when an error is encountered.
             -- For modelsim: see menu Simulate -> Runtime options -> Assertions
-            REPORT "FINISHED" SEVERITY FAILURE;
-        END IF;
-    END PROCESS;
+            report "FINISHED" severity FAILURE;
+        end if;
+    end process;
 
-    stdio : mblite_stdio PORT MAP
+    stdio : mblite_stdio port map
     (
         dmem_i => s_dmem_i(1),
         dmem_o => s_dmem_o(1),
@@ -80,29 +80,29 @@ BEGIN
     );
 
     s_dmem_i(0).ena_i <= '1';
-    sel_o <= s_dmem_o(0).sel_o WHEN s_dmem_o(0).we_o = '1' ELSE (OTHERS => '0');
-    ena_o <= NOT sys_rst_i AND s_dmem_o(0).ena_o;
+    sel_o <= s_dmem_o(0).sel_o when s_dmem_o(0).we_o = '1' else (others => '0');
+    ena_o <= not sys_rst_i and s_dmem_o(0).ena_o;
 
-    dmem : sram_4en GENERIC MAP
+    dmem : sram_4en generic map
     (
         WIDTH => CFG_DMEM_WIDTH,
         SIZE => ram_size - 2
     )
-    PORT MAP
+    port map
     (
         dat_o => s_dmem_i(0).dat_i,
         dat_i => s_dmem_o(0).dat_o,
-        adr_i => s_dmem_o(0).adr_o(ram_size - 1 DOWNTO 2),
+        adr_i => s_dmem_o(0).adr_o(ram_size - 1 downto 2),
         wre_i => sel_o,
         ena_i => ena_o,
         clk_i => sys_clk_i
     );
 
-    decoder : core_address_decoder GENERIC MAP
+    decoder : core_address_decoder generic map
     (
         G_NUM_SLAVES => CFG_NUM_SLAVES
     )
-    PORT MAP
+    port map
     (
         m_dmem_i => dmem_i,
         s_dmem_o => s_dmem_o,
@@ -111,22 +111,22 @@ BEGIN
         clk_i    => sys_clk_i
     );
 
-    imem : sram GENERIC MAP
+    imem : sram generic map
     (
         WIDTH => CFG_IMEM_WIDTH,
         SIZE => rom_size - 2
     )
-    PORT MAP
+    port map
     (
         dat_o => imem_i.dat_i,
         dat_i => "00000000000000000000000000000000",
-        adr_i => imem_o.adr_o(rom_size - 1 DOWNTO 2),
+        adr_i => imem_o.adr_o(rom_size - 1 downto 2),
         wre_i => '0',
         ena_i => imem_o.ena_o,
         clk_i => sys_clk_i
     );
 
-    core0 : core PORT MAP
+    core0 : core port map
     (
         imem_o => imem_o,
         dmem_o => dmem_o,
@@ -137,4 +137,4 @@ BEGIN
         clk_i  => sys_clk_i
     );
 
-END arch;
+end arch;

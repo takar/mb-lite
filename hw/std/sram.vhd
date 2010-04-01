@@ -11,43 +11,42 @@
 --
 ----------------------------------------------------------------------------------------------
 
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-LIBRARY mblite;
-USE mblite.std_Pkg.ALL;
+library mblite;
+use mblite.std_Pkg.all;
 
-ENTITY sram IS GENERIC
+entity sram is generic
 (
     WIDTH : positive := 32;
     SIZE  : positive := 16
 );
-PORT
+port
 (
-    dat_o : OUT std_logic_vector(WIDTH - 1 DOWNTO 0);
-    dat_i : IN std_logic_vector(WIDTH - 1 DOWNTO 0);
-    adr_i : IN std_logic_vector(SIZE - 1 DOWNTO 0);
-    wre_i : IN std_logic;
-    ena_i : IN std_logic;
-    clk_i : IN std_logic
+    dat_o : out std_logic_vector(WIDTH - 1 downto 0);
+    dat_i : in std_logic_vector(WIDTH - 1 downto 0);
+    adr_i : in std_logic_vector(SIZE - 1 downto 0);
+    wre_i : in std_logic;
+    ena_i : in std_logic;
+    clk_i : in std_logic
 );
-END sram;
+end sram;
 
-ARCHITECTURE arch OF sram IS
-    TYPE ram_type IS array(2 ** SIZE - 1 DOWNTO 0) OF std_logic_vector(WIDTH - 1 DOWNTO 0);
-    SIGNAL ram :  ram_type;
-BEGIN
-    PROCESS(clk_i)
-    BEGIN
-        IF rising_edge(clk_i) THEN
-            IF ena_i = '1' THEN
-                IF wre_i = '1' THEN
+architecture arch of sram is
+    type ram_type is array(2 ** SIZE - 1 downto 0) of std_logic_vector(WIDTH - 1 downto 0);
+    signal ram :  ram_type;
+begin
+    process(clk_i)
+    begin
+        if rising_edge(clk_i) then
+            if ena_i = '1' then
+                if wre_i = '1' then
                    ram(my_conv_integer(adr_i)) <= dat_i;
-                END IF;
+                end if;
                 dat_o <= ram(my_conv_integer(adr_i));
-            END IF;
-        END IF;
-    END PROCESS;
-END arch;
-
+            end if;
+        end if;
+    end process;
+end arch;

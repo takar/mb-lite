@@ -13,32 +13,32 @@
 --
 ----------------------------------------------------------------------------------------------
 
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-LIBRARY mblite;
-USE mblite.std_Pkg.ALL;
+library mblite;
+use mblite.std_Pkg.all;
 
-ENTITY sram_4en_init IS GENERIC
+entity sram_4en_init is generic
 (
     WIDTH : integer := 32;
     SIZE  : integer := 11
 );
-PORT
+port
 (
-    dat_o                   : OUT std_logic_vector(WIDTH - 1 DOWNTO 0);
-    dat_i                   : IN std_logic_vector(WIDTH - 1 DOWNTO 0);
-    adr_i                   : IN std_logic_vector(SIZE - 1 DOWNTO 0);
-    wre_i                   : IN std_logic_vector(3 DOWNTO 0);
-    ena_i                   : IN std_logic;
-    clk_i                   : IN std_logic
+    dat_o                   : out std_logic_vector(WIDTH - 1 downto 0);
+    dat_i                   : in std_logic_vector(WIDTH - 1 downto 0);
+    adr_i                   : in std_logic_vector(SIZE - 1 downto 0);
+    wre_i                   : in std_logic_vector(3 downto 0);
+    ena_i                   : in std_logic;
+    clk_i                   : in std_logic
 );
-END sram_4en_init;
+end sram_4en_init;
 
-ARCHITECTURE arch OF sram_4en_init IS
-  TYPE ram_type IS array (0 TO 2 ** SIZE - 1) OF std_logic_vector(WIDTH - 1 DOWNTO 0);
-  SIGNAL ram : ram_type := (
+architecture arch of sram_4en_init is
+  type ram_type is array (0 to 2 ** size - 1) of std_logic_vector(WIDTH - 1 downto 0);
+  signal ram : ram_type := (
     X"B8080050",X"00000000",X"B8080728",X"00000000",X"B8080738",X"00000000",X"00000000",X"00000000",
     X"B8080730",X"00000000",X"00000000",X"00000000",X"00000000",X"00000000",X"00000000",X"00000000",
     X"00000000",X"00000000",X"00000000",X"00000000",X"31A01028",X"30400F18",X"B0000000",X"30209038",
@@ -296,32 +296,32 @@ ARCHITECTURE arch OF sram_4en_init IS
     X"00000000",X"00000000",X"00000000",X"00000000",X"00000000",X"00000000",X"00000000",X"00000000",
     X"00000000",X"00000000",X"00000000",X"00000000",X"00000000",X"00000000",X"00000000",X"00000000");
 
-    SIGNAL di0, di1, di2, di3 : std_logic_vector(WIDTH/4 - 1 DOWNTO 0);
-BEGIN
+    signal di0, di1, di2, di3 : std_logic_vector(WIDTH/4 - 1 downto 0);
+begin
     process(wre_i, dat_i, adr_i)
     begin
        if wre_i(0) = '1' then
-          di0 <= dat_i(WIDTH/4 - 1 DOWNTO 0);
+          di0 <= dat_i(WIDTH/4 - 1 downto 0);
        else
-          di0 <= ram(my_conv_integer(adr_i))(WIDTH/4 - 1 DOWNTO 0);
+          di0 <= ram(my_conv_integer(adr_i))(WIDTH/4 - 1 downto 0);
        end if;
 
        if wre_i(1) = '1' then
-          di1 <= dat_i(WIDTH/2 - 1 DOWNTO WIDTH/4);
+          di1 <= dat_i(WIDTH/2 - 1 downto WIDTH/4);
        else
-          di1 <= ram(my_conv_integer(adr_i))(WIDTH/2 - 1 DOWNTO WIDTH/4);
+          di1 <= ram(my_conv_integer(adr_i))(WIDTH/2 - 1 downto WIDTH/4);
        end if;
 
        if wre_i(2) = '1' then
-          di2 <= dat_i(3*WIDTH/4 - 1 DOWNTO WIDTH/2);
+          di2 <= dat_i(3*WIDTH/4 - 1 downto WIDTH/2);
        else
-          di2 <= ram(my_conv_integer(adr_i))(3*WIDTH/4 - 1 DOWNTO WIDTH/2);
+          di2 <= ram(my_conv_integer(adr_i))(3*WIDTH/4 - 1 downto WIDTH/2);
        end if;
 
        if wre_i(3) = '1' then
-          di3 <= dat_i(WIDTH-1 DOWNTO 3*WIDTH/4);
+          di3 <= dat_i(WIDTH-1 downto 3*WIDTH/4);
        else
-          di3 <= ram(my_conv_integer(adr_i))(WIDTH-1 DOWNTO 3*WIDTH/4);
+          di3 <= ram(my_conv_integer(adr_i))(WIDTH-1 downto 3*WIDTH/4);
        end if;
     end process;
 
@@ -334,4 +334,4 @@ BEGIN
           dat_o <= ram(my_conv_integer(adr_i));
        end if;
     end process;
-END arch;
+end arch;

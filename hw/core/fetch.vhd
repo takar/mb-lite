@@ -14,57 +14,57 @@
 --
 ----------------------------------------------------------------------------------------------
 
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-LIBRARY mblite;
-USE mblite.config_Pkg.ALL;
-USE mblite.core_Pkg.ALL;
-USE mblite.std_Pkg.ALL;
+library mblite;
+use mblite.config_Pkg.all;
+use mblite.core_Pkg.all;
+use mblite.std_Pkg.all;
 
-ENTITY fetch IS PORT
+entity fetch is port
 (
-    fetch_o : OUT fetch_out_type;
-    imem_o  : OUT imem_out_type;
-    fetch_i : IN fetch_in_type;
-    rst_i   : IN std_logic;
-    ena_i   : IN std_logic;
-    clk_i   : IN std_logic
+    fetch_o : out fetch_out_type;
+    imem_o  : out imem_out_type;
+    fetch_i : in fetch_in_type;
+    rst_i   : in std_logic;
+    ena_i   : in std_logic;
+    clk_i   : in std_logic
 );
-END fetch;
+end fetch;
 
-ARCHITECTURE arch OF fetch IS
-    SIGNAL r, rin   : fetch_out_type;
-BEGIN
+architecture arch of fetch is
+    signal r, rin   : fetch_out_type;
+begin
 
     fetch_o.program_counter <= r.program_counter;
     imem_o.adr_o <= rin.program_counter;
     imem_o.ena_o <= ena_i;
 
-    fetch_comb: PROCESS(fetch_i, r, rst_i)
-        VARIABLE v : fetch_out_type;
-    BEGIN
+    fetch_comb: process(fetch_i, r, rst_i)
+        variable v : fetch_out_type;
+    begin
         v := r;
-        IF fetch_i.hazard = '1' THEN
+        if fetch_i.hazard = '1' then
             v.program_counter := r.program_counter;
-        ELSIF fetch_i.branch = '1' THEN
+        elsif fetch_i.branch = '1' then
             v.program_counter := fetch_i.branch_target;
-        ELSE
-            v.program_counter := increment(r.program_counter(CFG_IMEM_SIZE - 1 DOWNTO 2)) & "00";
-        END IF;
+        else
+            v.program_counter := increment(r.program_counter(CFG_IMEM_SIZE - 1 downto 2)) & "00";
+        end if;
         rin <= v;
-    END PROCESS;
+    end process;
 
-    fetch_seq: PROCESS(clk_i)
-    BEGIN
-        IF rising_edge(clk_i) THEN
-            IF rst_i = '1' THEN
-                r.program_counter <= (OTHERS => '0');
-            ELSIF ena_i = '1' THEN
+    fetch_seq: process(clk_i)
+    begin
+        if rising_edge(clk_i) then
+            if rst_i = '1' then
+                r.program_counter <= (others => '0');
+            elsif ena_i = '1' then
                 r <= rin;
-            END IF;
-        END IF;
-    END PROCESS;
+            end if;
+        end if;
+    end process;
 
-END arch;
+end arch;

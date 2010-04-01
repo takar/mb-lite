@@ -14,80 +14,80 @@
 --
 ----------------------------------------------------------------------------------------------
 
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-LIBRARY mblite;
-USE mblite.std_Pkg.ALL;
+library mblite;
+use mblite.std_Pkg.all;
 
-ENTITY sram_4en IS GENERIC
+entity sram_4en is generic
 (
     WIDTH : positive := 32;
     SIZE  : positive := 16
 );
-PORT
+port
 (
-    dat_o : OUT std_logic_vector(WIDTH - 1 DOWNTO 0);
-    dat_i : IN std_logic_vector(WIDTH - 1 DOWNTO 0);
-    adr_i : IN std_logic_vector(SIZE - 1 DOWNTO 0);
-    wre_i : IN std_logic_vector(WIDTH/8 - 1 DOWNTO 0);
-    ena_i : IN std_logic;
-    clk_i : IN std_logic
+    dat_o : out std_logic_vector(WIDTH - 1 downto 0);
+    dat_i : in std_logic_vector(WIDTH - 1 downto 0);
+    adr_i : in std_logic_vector(SIZE - 1 downto 0);
+    wre_i : in std_logic_vector(WIDTH/8 - 1 downto 0);
+    ena_i : in std_logic;
+    clk_i : in std_logic
 );
-END sram_4en;
+end sram_4en;
 
 -- Although this memory is very easy to use in conjunction with Modelsims mem load, it is not
 -- supported by many devices (although it comes straight from the library. Many devices give
 -- cryptic synthesization errors on this implementation, so it is not the default.
-ARCHITECTURE arch2 OF sram_4en IS
+architecture arch2 of sram_4en is
 
-    TYPE ram_type IS array(2 ** SIZE - 1 DOWNTO 0) OF std_logic_vector(WIDTH - 1 DOWNTO 0);
-    TYPE sel_type IS array(WIDTH/8 - 1 DOWNTO 0) OF std_logic_vector(7 DOWNTO 0);
+    type ram_type is array(2 ** SIZE - 1 downto 0) of std_logic_vector(WIDTH - 1 downto 0);
+    type sel_type is array(WIDTH/8 - 1 downto 0) of std_logic_vector(7 downto 0);
 
-    SIGNAL ram: ram_type;
-    SIGNAL di: sel_type;
-BEGIN
-    PROCESS(wre_i, dat_i, adr_i)
-    BEGIN
-        FOR i IN 0 TO WIDTH/8 - 1 LOOP
-            IF wre_i(i) = '1' THEN
-                di(i) <= dat_i((i+1)*8 - 1 DOWNTO i*8);
-            ELSE
-                di(i) <= ram(my_conv_integer(adr_i))((i+1)*8 - 1 DOWNTO i*8);
-            END IF;
-        END LOOP;
-    END PROCESS;
+    signal ram: ram_type;
+    signal di: sel_type;
+begin
+    process(wre_i, dat_i, adr_i)
+    begin
+        for i in 0 to WIDTH/8 - 1 loop
+            if wre_i(i) = '1' then
+                di(i) <= dat_i((i+1)*8 - 1 downto i*8);
+            else
+                di(i) <= ram(my_conv_integer(adr_i))((i+1)*8 - 1 downto i*8);
+            end if;
+        end loop;
+    end process;
 
-    PROCESS(clk_i)
-    BEGIN
-        IF rising_edge(clk_i) THEN
-            IF ena_i = '1' THEN
+    process(clk_i)
+    begin
+        if rising_edge(clk_i) then
+            if ena_i = '1' then
                 ram(my_conv_integer(adr_i)) <= di(3) & di(2) & di(1) & di(0);
                 dat_o <= di(3) & di(2) & di(1) & di(0);
-            END IF;
-        END IF;
-    END PROCESS;
-END arch2;
+            end if;
+        end if;
+    end process;
+end arch2;
 
 -- Less convenient but very general memory block with four separate write
 -- enable signals. (4x8 bit)
-ARCHITECTURE arch OF sram_4en IS
-BEGIN
-   mem: FOR i IN 0 TO WIDTH/8 - 1 GENERATE
-       mem : sram GENERIC MAP
+architecture arch of sram_4en is
+begin
+   mem: for i in 0 to WIDTH/8 - 1 generate
+       mem : sram generic map
        (
            WIDTH   => 8,
            SIZE    => SIZE
        )
-       PORT MAP
+       port map
        (
-           dat_o   => dat_o((i+1)*8 - 1 DOWNTO i*8),
-           dat_i   => dat_i((i+1)*8 - 1 DOWNTO i*8),
+           dat_o   => dat_o((i+1)*8 - 1 downto i*8),
+           dat_i   => dat_i((i+1)*8 - 1 downto i*8),
            adr_i   => adr_i,
            wre_i   => wre_i(i),
            ena_i   => ena_i,
            clk_i   => clk_i
        );
-   END GENERATE;
-END arch;
+   end generate;
+end arch;

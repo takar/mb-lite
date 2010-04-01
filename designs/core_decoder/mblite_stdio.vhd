@@ -11,58 +11,58 @@
 --
 ----------------------------------------------------------------------------------------------
 
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-LIBRARY mblite;
-USE mblite.config_Pkg.ALL;
-USE mblite.core_Pkg.ALL;
-USE mblite.std_Pkg.ALL;
+library mblite;
+use mblite.config_Pkg.all;
+use mblite.core_Pkg.all;
+use mblite.std_Pkg.all;
 
-USE std.textio.ALL;
+use std.textio.all;
 
-ENTITY mblite_stdio IS PORT
+entity mblite_stdio is port
 (
-    dmem_i : OUT dmem_in_type;
-    dmem_o : IN dmem_out_type;
-    clk_i  : IN std_logic
+    dmem_i : out dmem_in_type;
+    dmem_o : in dmem_out_type;
+    clk_i  : in std_logic
 );
-END mblite_stdio;
+end mblite_stdio;
 
-ARCHITECTURE arch OF mblite_stdio IS
-BEGIN
+architecture arch of mblite_stdio is
+begin
     -- Character device
-    stdio: PROCESS(clk_i)
-            VARIABLE s    : line;
-            VARIABLE byte : std_logic_vector(7 DOWNTO 0);
-            VARIABLE char : character;
-        BEGIN
-            dmem_i.dat_i <= (OTHERS => '0');
+    stdio: process(clk_i)
+            variable s    : line;
+            variable byte : std_logic_vector(7 downto 0);
+            variable char : character;
+        begin
+            dmem_i.dat_i <= (others => '0');
             dmem_i.ena_i <= '1';
-            IF rising_edge(clk_i) THEN
-                IF dmem_o.ena_o = '1' THEN
-                    IF dmem_o.we_o = '1' THEN
+            if rising_edge(clk_i) then
+                if dmem_o.ena_o = '1' then
+                    if dmem_o.we_o = '1' then
                     -- WRITE STDOUT
-                        CASE dmem_o.sel_o IS
-                            WHEN "0001" => byte := dmem_o.dat_o( 7 DOWNTO  0);
-                            WHEN "0010" => byte := dmem_o.dat_o(15 DOWNTO  8);
-                            WHEN "0100" => byte := dmem_o.dat_o(23 DOWNTO 16);
-                            WHEN "1000" => byte := dmem_o.dat_o(31 DOWNTO 24);
-                            WHEN OTHERS => NULL;
-                        END CASE;
+                        case dmem_o.sel_o is
+                            when "0001" => byte := dmem_o.dat_o( 7 downto  0);
+                            when "0010" => byte := dmem_o.dat_o(15 downto  8);
+                            when "0100" => byte := dmem_o.dat_o(23 downto 16);
+                            when "1000" => byte := dmem_o.dat_o(31 downto 24);
+                            when others => null;
+                        end case;
                         char := character'val(my_conv_integer(byte));
-                        IF byte = X"0D" THEN
+                        if byte = x"0d" then
                             -- Ignore character 13
-                        ELSIF byte = X"0A" THEN
+                        elsif byte = x"0a" then
                             -- Writeline on character 10 (newline)
                             writeline(output, s);
-                        ELSE
+                        else
                             -- Write to buffer
                             write(s, char);
-                        END IF;
-                    END IF;
-                END IF;
-            END IF;
-    END PROCESS;
-END arch;
+                        end if;
+                    end if;
+                end if;
+            end if;
+    end process;
+end arch;

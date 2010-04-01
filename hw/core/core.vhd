@@ -12,60 +12,60 @@
 --
 ----------------------------------------------------------------------------------------------
 
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-LIBRARY mblite;
-USE mblite.config_Pkg.ALL;
-USE mblite.core_Pkg.ALL;
+library mblite;
+use mblite.config_Pkg.all;
+use mblite.core_Pkg.all;
 
-ENTITY core IS GENERIC
+entity core is generic
 (
     G_INTERRUPT  : boolean := CFG_INTERRUPT;
     G_USE_HW_MUL : boolean := CFG_USE_HW_MUL;
     G_USE_BARREL : boolean := CFG_USE_BARREL;
     G_DEBUG      : boolean := CFG_DEBUG
 );
-PORT
+port
 (
-    imem_o : OUT imem_out_type;
-    dmem_o : OUT dmem_out_type;
-    imem_i : IN imem_in_type;
-    dmem_i : IN dmem_in_type;
-    int_i  : IN std_logic;
-    rst_i  : IN std_logic;
-    clk_i  : IN std_logic
+    imem_o : out imem_out_type;
+    dmem_o : out dmem_out_type;
+    imem_i : in imem_in_type;
+    dmem_i : in dmem_in_type;
+    int_i  : in std_logic;
+    rst_i  : in std_logic;
+    clk_i  : in std_logic
 );
-END core;
+end core;
 
-ARCHITECTURE arch OF core IS
+architecture arch of core is
 
-    SIGNAL fetch_i : fetch_in_type;
-    SIGNAL fetch_o : fetch_out_type;
+    signal fetch_i : fetch_in_type;
+    signal fetch_o : fetch_out_type;
 
-    SIGNAL decode_i : decode_in_type;
-    SIGNAL decode_o : decode_out_type;
+    signal decode_i : decode_in_type;
+    signal decode_o : decode_out_type;
 
-    SIGNAL gprf_o : gprf_out_type;
+    signal gprf_o : gprf_out_type;
 
-    SIGNAL exec_i : execute_in_type;
-    SIGNAL exec_o : execute_out_type;
+    signal exec_i : execute_in_type;
+    signal exec_o : execute_out_type;
 
-    SIGNAL mem_i : mem_in_type;
-    SIGNAL mem_o : mem_out_type;
+    signal mem_i : mem_in_type;
+    signal mem_o : mem_out_type;
 
-    SIGNAL ena_i : std_logic;
+    signal ena_i : std_logic;
 
-BEGIN
+begin
 
     ena_i <= dmem_i.ena_i;
 
     fetch_i.hazard        <= decode_o.hazard;
     fetch_i.branch        <= exec_o.branch;
-    fetch_i.branch_target <= exec_o.alu_result(CFG_IMEM_SIZE - 1 DOWNTO 0);
+    fetch_i.branch_target <= exec_o.alu_result(CFG_IMEM_SIZE - 1 downto 0);
 
-    fetch0 : fetch PORT MAP
+    fetch0 : fetch port map
     (
         fetch_o => fetch_o,
         imem_o  => imem_o,
@@ -77,21 +77,21 @@ BEGIN
 
     decode_i.program_counter   <= fetch_o.program_counter;
     decode_i.instruction       <= imem_i.dat_i;
-    decode_i.ctrl_wb           <= mem_o.ctrl_wb;
-    decode_i.ctrl_mem_wb       <= mem_o.ctrl_mem_wb;
+    decode_i.ctrl_wrb          <= mem_o.ctrl_wrb;
+    decode_i.ctrl_mem_wrb      <= mem_o.ctrl_mem_wrb;
     decode_i.mem_result        <= dmem_i.dat_i;
     decode_i.alu_result        <= mem_o.alu_result;
     decode_i.interrupt         <= int_i;
     decode_i.flush_id          <= exec_o.flush_id;
 
-    decode0: decode GENERIC MAP
+    decode0: decode generic map
     (
         G_INTERRUPT  => G_INTERRUPT,
         G_USE_HW_MUL => G_USE_HW_MUL,
         G_USE_BARREL => G_USE_BARREL,
         G_DEBUG      => G_DEBUG
     )
-    PORT MAP
+    port map
     (
         decode_o => decode_o,
         decode_i => decode_i,
@@ -112,21 +112,21 @@ BEGIN
 
     exec_i.imm                  <= decode_o.imm;
     exec_i.program_counter      <= decode_o.program_counter;
-    exec_i.ctrl_wb              <= decode_o.ctrl_wb;
+    exec_i.ctrl_wrb             <= decode_o.ctrl_wrb;
     exec_i.ctrl_mem             <= decode_o.ctrl_mem;
     exec_i.ctrl_ex              <= decode_o.ctrl_ex;
 
-    exec_i.fwd_mem              <= mem_o.ctrl_wb;
+    exec_i.fwd_mem              <= mem_o.ctrl_wrb;
     exec_i.mem_result           <= dmem_i.dat_i;
     exec_i.alu_result           <= mem_o.alu_result;
-    exec_i.ctrl_mem_wb          <= mem_o.ctrl_mem_wb;
+    exec_i.ctrl_mem_wrb         <= mem_o.ctrl_mem_wrb;
 
-    execute0 : execute GENERIC MAP
+    execute0 : execute generic map
     (
         G_USE_HW_MUL => G_USE_HW_MUL,
         G_USE_BARREL => G_USE_BARREL
     )
-    PORT MAP
+    port map
     (
         exec_o => exec_o,
         exec_i => exec_i,
@@ -139,11 +139,11 @@ BEGIN
     mem_i.program_counter <= exec_o.program_counter;
     mem_i.branch          <= exec_o.branch;
     mem_i.dat_d           <= exec_o.dat_d;
-    mem_i.ctrl_wb         <= exec_o.ctrl_wb;
+    mem_i.ctrl_wrb        <= exec_o.ctrl_wrb;
     mem_i.ctrl_mem        <= exec_o.ctrl_mem;
     mem_i.mem_result      <= dmem_i.dat_i;
 
-    mem0 : mem PORT MAP
+    mem0 : mem port map
     (
         mem_o  => mem_o,
         dmem_o => dmem_o,
@@ -153,4 +153,4 @@ BEGIN
         clk_i  => clk_i
     );
 
-END arch;
+end arch;

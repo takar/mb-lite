@@ -11,9 +11,9 @@
 --
 ----------------------------------------------------------------------------------------------
 
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.numeric_std.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 PACKAGE std_Pkg IS
 
@@ -21,147 +21,145 @@ PACKAGE std_Pkg IS
 -- STANDARD COMPONENTS IN STD_PKG
 ----------------------------------------------------------------------------------------------
 
-    COMPONENT sram GENERIC
+    component sram generic
     (
         WIDTH : positive;
         SIZE  : positive
     );
-    PORT
+    port
     (
-        dat_o : OUT std_logic_vector(WIDTH - 1 DOWNTO 0);
-        dat_i : IN std_logic_vector(WIDTH - 1 DOWNTO 0);
-        adr_i : IN std_logic_vector(SIZE - 1 DOWNTO 0);
-        wre_i : IN std_logic;
-        ena_i : IN std_logic;
-        clk_i : IN std_logic
+        dat_o : out std_logic_vector(WIDTH - 1 downto 0);
+        dat_i : in std_logic_vector(WIDTH - 1 downto 0);
+        adr_i : in std_logic_vector(SIZE - 1 downto 0);
+        wre_i : in std_logic;
+        ena_i : in std_logic;
+        clk_i : in std_logic
     );
-    END COMPONENT;
+    end component;
 
-    COMPONENT sram_4en GENERIC
+    component sram_4en generic
     (
         WIDTH : positive;
         SIZE  : positive
     );
-    PORT
+    port
     (
-        dat_o : OUT std_logic_vector(WIDTH - 1 DOWNTO 0);
-        dat_i : IN std_logic_vector(WIDTH - 1 DOWNTO 0);
-        adr_i : IN std_logic_vector(SIZE - 1 DOWNTO 0);
-        wre_i : IN std_logic_vector(3 DOWNTO 0);
-        ena_i : IN std_logic;
-        clk_i : IN std_logic
+        dat_o : out std_logic_vector(WIDTH - 1 downto 0);
+        dat_i : in std_logic_vector(WIDTH - 1 downto 0);
+        adr_i : in std_logic_vector(SIZE - 1 downto 0);
+        wre_i : in std_logic_vector(3 downto 0);
+        ena_i : in std_logic;
+        clk_i : in std_logic
     );
-    END COMPONENT;
+    end component;
 
-    COMPONENT dsram GENERIC
+    component dsram generic
     (
         WIDTH : positive;
         SIZE  : positive
     );
-    PORT
+    port
     (
-        dat_o   : OUT std_logic_vector(WIDTH - 1 DOWNTO 0);
-        adr_i   : IN std_logic_vector(SIZE - 1 DOWNTO 0);
-        ena_i   : IN std_logic;
-        dat_w_i : IN std_logic_vector(WIDTH - 1 DOWNTO 0);
-        adr_w_i : IN std_logic_vector(SIZE - 1 DOWNTO 0);
-        wre_i   : IN std_logic;
-        clk_i   : IN std_logic
+        dat_o   : out std_logic_vector(WIDTH - 1 downto 0);
+        adr_i   : in std_logic_vector(SIZE - 1 downto 0);
+        ena_i   : in std_logic;
+        dat_w_i : in std_logic_vector(WIDTH - 1 downto 0);
+        adr_w_i : in std_logic_vector(SIZE - 1 downto 0);
+        wre_i   : in std_logic;
+        clk_i   : in std_logic
     );
-    END COMPONENT;
+    end component;
 
 ----------------------------------------------------------------------------------------------
 -- FUNCTIONS IN STD_PKG
 ----------------------------------------------------------------------------------------------
 
-    FUNCTION v_or(d : std_logic_vector) RETURN std_logic;
-    FUNCTION is_zero(d : std_logic_vector) RETURN std_logic;
-    FUNCTION is_not_zero(d : std_logic_vector) RETURN std_logic;
-    FUNCTION my_conv_integer(a: std_logic_vector) RETURN integer;
-    FUNCTION notx(d : std_logic_vector) RETURN boolean;
-    FUNCTION compare(a, b : std_logic_vector) RETURN std_logic;
-    FUNCTION multiply(a, b : std_logic_vector) RETURN std_logic_vector;
-    FUNCTION sign_extend(value: std_logic_vector; fill: std_logic; size: positive) RETURN std_logic_vector;
-    FUNCTION add(a, b : std_logic_vector; ci: std_logic) RETURN std_logic_vector;
-    FUNCTION increment(a : std_logic_vector) RETURN std_logic_vector;
-    FUNCTION shift(value : std_logic_vector(31 DOWNTO 0); shamt: std_logic_vector(4 DOWNTO 0); s: std_logic; t: std_logic) RETURN std_logic_vector;
-    FUNCTION shift_left(value : std_logic_vector(31 DOWNTO 0); shamt : std_logic_vector(4 DOWNTO 0)) RETURN std_logic_vector;
-    FUNCTION shift_right(value : std_logic_vector(31 DOWNTO 0); shamt : std_logic_vector(4 DOWNTO 0); padding: std_logic) RETURN std_logic_vector;
+    function v_or(d : std_logic_vector) return std_logic;
+    function is_zero(d : std_logic_vector) return std_logic;
+    function is_not_zero(d : std_logic_vector) return std_logic;
+    function my_conv_integer(a: std_logic_vector) return integer;
+    function notx(d : std_logic_vector) return boolean;
+    function compare(a, b : std_logic_vector) return std_logic;
+    function multiply(a, b : std_logic_vector) return std_logic_vector;
+    function sign_extend(value: std_logic_vector; fill: std_logic; size: positive) return std_logic_vector;
+    function add(a, b : std_logic_vector; ci: std_logic) return std_logic_vector;
+    function increment(a : std_logic_vector) return std_logic_vector;
+    function shift(value : std_logic_vector(31 downto 0); shamt: std_logic_vector(4 downto 0); s: std_logic; t: std_logic) return std_logic_vector;
+    function shift_left(value : std_logic_vector(31 downto 0); shamt : std_logic_vector(4 downto 0)) return std_logic_vector;
+    function shift_right(value : std_logic_vector(31 downto 0); shamt : std_logic_vector(4 downto 0); padding: std_logic) return std_logic_vector;
 
-END std_Pkg;
+end std_Pkg;
 
 PACKAGE BODY std_Pkg IS
 
 -- Unary OR reduction
-    FUNCTION v_or(d : std_logic_vector) RETURN std_logic IS
-        VARIABLE z : std_logic;
-    BEGIN
+    function v_or(d : std_logic_vector) return std_logic is
+        variable z : std_logic;
+    begin
         z := '0';
-        IF notx (d) THEN
-            FOR i IN d'range LOOP
-                z := z OR d(i);
-            END LOOP;
-        END IF;
-        RETURN z;
-    END;
+        if notx (d) then
+            for i in d'range loop
+                z := z or d(i);
+            end loop;
+        end if;
+        return z;
+    end;
 
 -- Check for ones in the vector
-    FUNCTION is_not_zero(d : std_logic_vector) RETURN std_logic IS
-        VARIABLE z : std_logic_vector(d'range);
-    BEGIN
-        z := (OTHERS => '0');
-        IF notx(d) THEN
+    function is_not_zero(d : std_logic_vector) return std_logic is
+        variable z : std_logic_vector(d'range);
+    begin
+        z := (others => '0');
+        if notx(d) then
 
-            IF d = z THEN
-                RETURN '0';
-            ELSE
-                RETURN '1';
-            END IF;
+            if d = z then
+                return '0';
+            else
+                return '1';
+            end if;
 
-        ELSE
-            RETURN '0';
-        END IF;
-    END;
+        else
+            return '0';
+        end if;
+    end;
 
 -- Check for ones in the vector
-    FUNCTION is_zero(d : std_logic_vector) RETURN std_logic IS
-    BEGIN
-        RETURN NOT is_not_zero(d);
-    END;
+    function is_zero(d : std_logic_vector) return std_logic is
+    begin
+        return not is_not_zero(d);
+    end;
 
     -- rewrite conv_integer to avoid modelsim warnings
-    FUNCTION my_conv_integer(a : std_logic_vector) RETURN integer IS
-        VARIABLE res : integer RANGE 0 TO 2**a'length-1;
-    BEGIN
+    function my_conv_integer(a : std_logic_vector) return integer is
+        variable res : integer range 0 to 2**a'length-1;
+    begin
         res := 0;
-        IF (notx(a)) THEN
+        if (notx(a)) then
             res := to_integer(unsigned(a));
-        END IF;
-        RETURN res;
-    END;
+        end if;
+        return res;
+    end;
 
-    FUNCTION compare(a, b : std_logic_vector) RETURN std_logic IS
-        VARIABLE z : std_logic;
-    BEGIN
-
-        IF notx(a & b) AND a = b THEN
-            RETURN '1';
-        ELSE
-            RETURN '0';
-        END IF;
-
-    END;
+    function compare(a, b : std_logic_vector) return std_logic is
+        variable z : std_logic;
+    begin
+        if notx(a & b) and a = b then
+            return '1';
+        else
+            return '0';
+        end if;
+    end;
 
 -- Unary NOT X test
-    FUNCTION notx(d : std_logic_vector) RETURN boolean IS
-        VARIABLE res : boolean;
-    BEGIN
+    function notx(d : std_logic_vector) return boolean is
+        variable res : boolean;
+    begin
         res := true;
 -- pragma translate_off
-        res := NOT is_x(d);
+        res := not is_x(d);
 -- pragma translate_on
-        RETURN (res);
-    END;
+        return (res);
+    end;
 
 -- -- 32 bit shifter
 -- -- SYNOPSIS:
@@ -171,98 +169,94 @@ PACKAGE BODY std_Pkg IS
 -- --    t 0 / 1: shift logical / arithmetic
 -- -- PSEUDOCODE (from microblaze reference guide)
 -- --     if S = 1 then
--- --          (rD) ← (rA) << (rB)[27:31]
+-- --          (rD) = (rA) << (rB)[27:31]
 -- --     else
 -- --      if T = 1 then
--- --         if ((rB)[27:31]) ≠ 0 then
--- --              (rD)[0:(rB)[27:31]-1] ← (rA)[0]
--- --              (rD)[(rB)[27:31]:31] ← (rA) >> (rB)[27:31]
+-- --         if ((rB)[27:31]) != 0 then
+-- --              (rD)[0:(rB)[27:31]-1] = (rA)[0]
+-- --              (rD)[(rB)[27:31]:31] = (rA) >> (rB)[27:31]
 -- --         else
--- --              (rD) ← (rA)
+-- --              (rD) = (rA)
 -- --      else
--- --         (rD) ← (rA) >> (rB)[27:31]
+-- --         (rD) = (rA) >> (rB)[27:31]
 
-    FUNCTION shift(value: std_logic_vector(31 DOWNTO 0); shamt: std_logic_vector(4 DOWNTO 0); s: std_logic; t: std_logic) RETURN std_logic_vector IS
-    BEGIN
-        IF s = '1' THEN
+    function shift(value: std_logic_vector(31 downto 0); shamt: std_logic_vector(4 downto 0); s: std_logic; t: std_logic) return std_logic_vector is
+    begin
+        if s = '1' then
             -- left arithmetic or logical shift
-            RETURN shift_left(value, shamt);
-        ELSE
-            IF t = '1' THEN
+            return shift_left(value, shamt);
+        else
+            if t = '1' then
                 -- right arithmetic shift
-                RETURN shift_right(value, shamt, value(31));
-            ELSE
+                return shift_right(value, shamt, value(31));
+            else
                 -- right logical shift
-                RETURN shift_right(value, shamt, '0');
-            END IF;
-        END IF;
-    END;
+                return shift_right(value, shamt, '0');
+            end if;
+        end if;
+    end;
 
-    FUNCTION shift_left(value: std_logic_vector(31 DOWNTO 0); shamt: std_logic_vector(4 DOWNTO 0)) RETURN std_logic_vector IS
-        VARIABLE result: std_logic_vector(31 DOWNTO 0);
-        VARIABLE paddings: std_logic_vector(15 DOWNTO 0);
-    BEGIN
-
-        paddings := (OTHERS => '0');
+    function shift_left(value: std_logic_vector(31 downto 0); shamt: std_logic_vector(4 downto 0)) return std_logic_vector is
+        variable result: std_logic_vector(31 downto 0);
+        variable paddings: std_logic_vector(15 downto 0);
+    begin
+        paddings := (others => '0');
         result := value;
-        IF (shamt(4) = '1') THEN result := result(15 DOWNTO 0) & paddings(15 DOWNTO 0); END IF;
-        IF (shamt(3) = '1') THEN result := result(23 DOWNTO 0) & paddings( 7 DOWNTO 0); END IF;
-        IF (shamt(2) = '1') THEN result := result(27 DOWNTO 0) & paddings( 3 DOWNTO 0); END IF;
-        IF (shamt(1) = '1') THEN result := result(29 DOWNTO 0) & paddings( 1 DOWNTO 0); END IF;
-        IF (shamt(0) = '1') THEN result := result(30 DOWNTO 0) & paddings( 0 );         END IF;
-        RETURN result;
+        if (shamt(4) = '1') then result := result(15 downto 0) & paddings(15 downto 0); end if;
+        if (shamt(3) = '1') then result := result(23 downto 0) & paddings( 7 downto 0); end if;
+        if (shamt(2) = '1') then result := result(27 downto 0) & paddings( 3 downto 0); end if;
+        if (shamt(1) = '1') then result := result(29 downto 0) & paddings( 1 downto 0); end if;
+        if (shamt(0) = '1') then result := result(30 downto 0) & paddings( 0 );         end if;
+        return result;
+    end;
 
-    END;
-
-    FUNCTION shift_right(value: std_logic_vector(31 DOWNTO 0); shamt: std_logic_vector(4 DOWNTO 0); padding: std_logic) RETURN std_logic_vector IS
-        VARIABLE result: std_logic_vector(31 DOWNTO 0);
-        VARIABLE paddings: std_logic_vector(15 DOWNTO 0);
-    BEGIN
-
-        paddings := (OTHERS => padding);
+    function shift_right(value: std_logic_vector(31 downto 0); shamt: std_logic_vector(4 downto 0); padding: std_logic) return std_logic_vector is
+        variable result: std_logic_vector(31 downto 0);
+        variable paddings: std_logic_vector(15 downto 0);
+    begin
+        paddings := (others => padding);
         result := value;
-        IF (shamt(4) = '1') THEN result := paddings(15 DOWNTO 0) & result(31 DOWNTO 16); END IF;
-        IF (shamt(3) = '1') THEN result := paddings( 7 DOWNTO 0) & result(31 DOWNTO  8); END IF;
-        IF (shamt(2) = '1') THEN result := paddings( 3 DOWNTO 0) & result(31 DOWNTO  4); END IF;
-        IF (shamt(1) = '1') THEN result := paddings( 1 DOWNTO 0) & result(31 DOWNTO  2); END IF;
-        IF (shamt(0) = '1') THEN result := paddings( 0 )         & result(31 DOWNTO  1); END IF;
-        RETURN result;
+        if (shamt(4) = '1') then result := paddings(15 downto 0) & result(31 downto 16); end if;
+        if (shamt(3) = '1') then result := paddings( 7 downto 0) & result(31 downto  8); end if;
+        if (shamt(2) = '1') then result := paddings( 3 downto 0) & result(31 downto  4); end if;
+        if (shamt(1) = '1') then result := paddings( 1 downto 0) & result(31 downto  2); end if;
+        if (shamt(0) = '1') then result := paddings( 0 )         & result(31 downto  1); end if;
+        return result;
+    end;
 
-    END;
-
-    FUNCTION multiply(a, b: std_logic_vector) RETURN std_logic_vector IS
-        VARIABLE x: std_logic_vector (a'length + b'length - 1 DOWNTO 0);
-    BEGIN
+    function multiply(a, b: std_logic_vector) return std_logic_vector is
+        variable x: std_logic_vector (a'length + b'length - 1 downto 0);
+    begin
         x := std_logic_vector(signed(a) * signed(b));
-        RETURN x(31 DOWNTO 0);
-    END;
+        return x(31 downto 0);
+    end;
 
-    FUNCTION sign_extend(value: std_logic_vector; fill: std_logic; size: positive) RETURN std_logic_vector IS
-        VARIABLE a: std_logic_vector (size - 1 DOWNTO 0);
-    BEGIN
-        a(size - 1 DOWNTO value'length) := (OTHERS => fill);
-        a(value'length - 1 DOWNTO 0) := value;
+    function sign_extend(value: std_logic_vector; fill: std_logic; size: positive) return std_logic_vector is
+        variable a: std_logic_vector (size - 1 downto 0);
+    begin
+        a(size - 1 downto value'length) := (others => fill);
+        a(value'length - 1 downto 0) := value;
         return a;
-    END;
+    end;
 
-    FUNCTION add(a, b : std_logic_vector; ci: std_logic) RETURN std_logic_vector IS
-        VARIABLE x : std_logic_vector(a'length + 1 DOWNTO 0);
-    BEGIN
-        x := (OTHERS => '0');
-        IF notx (a & b & ci) THEN
+    function add(a, b : std_logic_vector; ci: std_logic) return std_logic_vector is
+        variable x : std_logic_vector(a'length + 1 downto 0);
+    begin
+        x := (others => '0');
+        if notx (a & b & ci) then
             x := std_logic_vector(signed('0' & a & '1') + signed('0' & b & ci));
-        END IF;
-        RETURN x(a'length + 1 DOWNTO 1);
-    END;
+        end if;
+        return x(a'length + 1 downto 1);
+    end;
 
-    FUNCTION increment(a : std_logic_vector) RETURN std_logic_vector IS
-        VARIABLE x : std_logic_vector(a'length-1 DOWNTO 0);
-    BEGIN
-        x := (OTHERS => '0');
-        IF notx (a) THEN
+    function increment(a : std_logic_vector) return std_logic_vector is
+        variable x : std_logic_vector(a'length-1 downto 0);
+    begin
+        x := (others => '0');
+        if notx (a) then
             x := std_logic_vector(signed(a) + 1);
-        END IF;
-        RETURN x;
-    END;
+        end if;
+        return x;
+    end;
 
-END std_Pkg;
+end std_Pkg;

@@ -11,52 +11,52 @@
 --
 ----------------------------------------------------------------------------------------------
 
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-PACKAGE config_Pkg IS
+package config_Pkg is
 
     ----------------------------------------------------------------------------------------------
     -- CORE PARAMETERS
     ----------------------------------------------------------------------------------------------
     -- Implement external interrupt
-    CONSTANT CFG_INTERRUPT : boolean := true;      -- Disable or enable external interrupt [0,1]
+    constant CFG_INTERRUPT : boolean := true;      -- Disable or enable external interrupt [0,1]
 
      -- Implement hardware multiplier
-    CONSTANT CFG_USE_HW_MUL : boolean := true;     -- Disable or enable multiplier [0,1]
+    constant CFG_USE_HW_MUL : boolean := true;     -- Disable or enable multiplier [0,1]
 
     -- Implement hardware barrel shifter
-    CONSTANT CFG_USE_BARREL : boolean := true;     -- Disable or enable barrel shifter [0,1]
+    constant CFG_USE_BARREL : boolean := true;     -- Disable or enable barrel shifter [0,1]
 
     -- Debug mode
-    CONSTANT CFG_DEBUG : boolean := true;          -- Resets some extra registers for better readability
+    constant CFG_DEBUG : boolean := true;          -- Resets some extra registers for better readability
                                                    -- and enables feedback (report) [0,1]
                                                    -- Set CFG_DEBUG to zero to obtain best performance.
 
     -- Memory parameters
-    CONSTANT CFG_DMEM_SIZE  : positive := 32;      -- Data memory bus size in 2LOG # elements
-    CONSTANT CFG_IMEM_SIZE  : positive := 16;      -- Instruction memory bus size in 2LOG # elements
-    CONSTANT CFG_BYTE_ORDER : boolean := true;     -- Switch between MSB (1, default) and LSB (0) byte order policy
+    constant CFG_DMEM_SIZE  : positive := 32;      -- Data memory bus size in 2LOG # elements
+    constant CFG_IMEM_SIZE  : positive := 16;      -- Instruction memory bus size in 2LOG # elements
+    constant CFG_BYTE_ORDER : boolean := true;     -- Switch between MSB (1, default) and LSB (0) byte order policy
 
     -- Register parameters
-    CONSTANT CFG_REG_FORCE_ZERO : boolean := true; -- Force data to zero if register address is zero [0,1]
-    CONSTANT CFG_REG_FWD_WB     : boolean := true; -- Forward writeback to loosen register memory requirements [0,1]
-    CONSTANT CFG_MEM_FWD_WB     : boolean := true; -- Forward memory result in stead of introducing stalls [0,1]
+    constant CFG_REG_FORCE_ZERO : boolean := true; -- Force data to zero if register address is zero [0,1]
+    constant CFG_REG_FWD_WRB    : boolean := true; -- Forward writeback to loosen register memory requirements [0,1]
+    constant CFG_MEM_FWD_WRB    : boolean := true; -- Forward memory result in stead of introducing stalls [0,1]
 
     ----------------------------------------------------------------------------------------------
     -- CONSTANTS (currently not configurable / not tested)
     ----------------------------------------------------------------------------------------------
-    CONSTANT CFG_DMEM_WIDTH : positive := 32;   -- Data memory width in bits
-    CONSTANT CFG_IMEM_WIDTH : positive := 32;   -- Instruction memory width in bits
-    CONSTANT CFG_GPRF_SIZE  : positive :=  5;   -- General Purpose Register File Size in 2LOG # elements
+    constant CFG_DMEM_WIDTH : positive := 32;   -- Data memory width in bits
+    constant CFG_IMEM_WIDTH : positive := 32;   -- Instruction memory width in bits
+    constant CFG_GPRF_SIZE  : positive :=  5;   -- General Purpose Register File Size in 2LOG # elements
 
     ----------------------------------------------------------------------------------------------
     -- BUS PARAMETERS
     ----------------------------------------------------------------------------------------------
 
-    TYPE memory_map_type IS ARRAY(natural RANGE <>) OF std_logic_vector(CFG_DMEM_WIDTH - 1 DOWNTO 0);
-    CONSTANT CFG_NUM_SLAVES : positive := 2;
-    CONSTANT CFG_MEMORY_MAP : memory_map_type(0 TO CFG_NUM_SLAVES) := (X"00000000", X"00FFFFFF", X"FFFFFFFF");
+    type memory_map_type is array(natural range <>) of std_logic_vector(CFG_DMEM_WIDTH - 1 downto 0);
+    constant CFG_NUM_SLAVES : positive := 2;
+    constant CFG_MEMORY_MAP : memory_map_type(0 to CFG_NUM_SLAVES) := (X"00000000", X"00FFFFFF", X"FFFFFFFF");
 
-END config_Pkg;
+end config_Pkg;
