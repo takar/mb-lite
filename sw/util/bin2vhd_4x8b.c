@@ -164,11 +164,6 @@ BEGIN\n\
     di1 <= dat_i(3*WIDTH_g/4 -1 DOWNTO   WIDTH_g/2);\n\
     di0 <= dat_i(  WIDTH_g   -1 DOWNTO 3*WIDTH_g/4);\n\
 \n\
-    do3 <= ram3(TO_INTEGER(UNSIGNED(adr_i)));\n\
-    do2 <= ram2(TO_INTEGER(UNSIGNED(adr_i)));\n\
-    do1 <= ram1(TO_INTEGER(UNSIGNED(adr_i)));\n\
-    do0 <= ram0(TO_INTEGER(UNSIGNED(adr_i)));\n\
-\n\
     PROCESS(clk_i)\n\
     BEGIN\n\
         -- wre: 3 downto 0, while di0..di3 in byte reversed format\n\
@@ -186,6 +181,10 @@ BEGIN\n\
                 IF wre_i(3) = '1' THEN\n\
                     ram0(TO_INTEGER(UNSIGNED(adr_i))) <= di0;\n\
                 END IF;\n\
+                do3 <= ram3(TO_INTEGER(UNSIGNED(adr_i)));\n\
+                do2 <= ram2(TO_INTEGER(UNSIGNED(adr_i)));\n\
+                do1 <= ram1(TO_INTEGER(UNSIGNED(adr_i)));\n\
+                do0 <= ram0(TO_INTEGER(UNSIGNED(adr_i)));\n\
             END IF;\n\
         END IF;\n\
     END PROCESS;\n\
