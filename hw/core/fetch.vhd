@@ -46,7 +46,9 @@ begin
         variable v : fetch_out_type;
     begin
         v := r;
-        if fetch_i.hazard = '1' then
+        if rst_i = '1' then 
+			v.program_counter := (OTHERS => '0');
+		elsif fetch_i.hazard = '1' then
             v.program_counter := r.program_counter;
         elsif fetch_i.branch = '1' then
             v.program_counter := fetch_i.branch_target;
