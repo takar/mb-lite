@@ -1,18 +1,15 @@
 TOP_LEVEL_DIR=../..
-
-DESIGN_NAME=core
-DESIGN_DIR=$(TOP_LEVEL_DIR)/designs/$(DESIGN_NAME)
+DESIGN_DIR=.
 
 MBLITE_HW_DIR=$(TOP_LEVEL_DIR)/hw
 MBLITE_STD_DIR=$(MBLITE_HW_DIR)/std
 MBLITE_CORE_DIR=$(MBLITE_HW_DIR)/core
 
+WORK_DIR=$(DESIGN_DIR)/work
+MODELSIM_WORK_DIR=$(WORK_DIR)/modelsim
+XILINX_WORK_DIR=$(WORK_DIR)/xilinx
+
 MBLITE_LIBRARY_NAME=mblite
-
-SIM_DIR=$(DESIGN_DIR)/work
-MODELSIM_SIM_DIR=$(SIM_DIR)/modelsim
-MODELSIM_WORK_DIR=$(MODELSIM_SIM_DIR)/$(DESIGN_NAME)
-
 WORK_LIBRARY_NAME=work
 
 default:
@@ -20,11 +17,11 @@ default:
 	@echo "---------------------------------------"
 	@echo "Make options:"
 	@echo "   default: Echo these instructions"
-	@echo "       all: Compile CORE to library mblite"
-	@echo "            Compile TESTBENCH to library work"
+	@echo "  modelsim: Build Modelsim project"
+	@echo "    xilinx: Build Xilinx project"
 	@echo "     clean: Remove all compiled and generated files"
 
-all: modelsim-design
+modelsim: modelsim-design
 
 ################
 # WORK library #
@@ -65,7 +62,7 @@ modelsim-std: modelsim-mblitelib
 	@vcom -work $(MBLITE_LIBRARY_NAME) $(MBLITE_STD_DIR)/sram_4en.vhd
 	@vcom -work $(MBLITE_LIBRARY_NAME) $(MBLITE_STD_DIR)/sram.vhd
 
-# Compile MB-LITE processor
+# Compile MB-LITE core
 modelsim-core: modelsim-std modelsim-mblite-config
 	@vcom -work $(MBLITE_LIBRARY_NAME) $(MBLITE_CORE_DIR)/core_Pkg.vhd
 	@vcom -work $(MBLITE_LIBRARY_NAME) $(MBLITE_CORE_DIR)/core.vhd
@@ -75,15 +72,24 @@ modelsim-core: modelsim-std modelsim-mblite-config
 	@vcom -work $(MBLITE_LIBRARY_NAME) $(MBLITE_CORE_DIR)/execute.vhd
 	@vcom -work $(MBLITE_LIBRARY_NAME) $(MBLITE_CORE_DIR)/mem.vhd
 
+#############################
+# Create xilinx ISE project #
+#############################
+
+xilinx: xilinx-clean
+	@mkdir -p $(XILINX_WORK_DIR)
+	@xtclsh $(DESIGN_DIR)/Xilinx.tcl
+
 ###########################
 # Remove work directories #
 ###########################
 
-modelsim-clean:
-	@rm -r -f $(MODELSIM_WORK_DIR)
+xilinx-clean:
+	@rm -rf core.gise
+	@rm -rf core.xise
 
 clean:
-	@rm -r -f $(SIM_DIR)
+	@rm -rf $(WORK_DIR)
 	@rm -f transcript
 	@rm -f modelsim.ini
 	@rm -f vsim.wlf
